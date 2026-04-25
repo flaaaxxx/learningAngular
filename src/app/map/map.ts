@@ -1,7 +1,6 @@
 import { Component, AfterViewInit, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import * as L from 'leaflet';
-import { map } from 'leaflet';
+import { LocationService } from '../location-service/location-service';
 
 @Component({
   selector: 'app-map',
@@ -13,7 +12,7 @@ export default class MapComponent implements AfterViewInit {
 
   private center: [number, number] = [52.1606959, 22.2487434];
   private zoomStart = 15;
-  private http = inject(HttpClient);
+  private locationService = inject(LocationService);
 
   ngAfterViewInit(): void {
     const map = L.map('map').setView(this.center, this.zoomStart);
@@ -25,7 +24,7 @@ export default class MapComponent implements AfterViewInit {
     }).addTo(map);
 
     marker.bindPopup(this.getPopupContent(map.getZoom()))
-          .openPopup();
+      .openPopup();
 
 
     // 1. Stwórz jeden uniwersalny popup
@@ -73,28 +72,24 @@ export default class MapComponent implements AfterViewInit {
       const { lat, lng } = e.latlng;
 
       // 1. Ustawiamy pustą wartość/loader od razu
-      popup
-        .setLatLng(e.latlng)
-        .setContent('Szukam adresu...')
-        .openOn(map);
+      popup .setLatLng(e.latlng)
+            .setContent('Szukam adresu...')
+            .openOn(map);
 
-      // 2. Wysyłamy żądanie przez HttpClient (Observable)
-      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
-
-      this.http.get<any>(url, { headers: { 'Accept-Language': 'pl' } })
+      this.locationService.getLocationData(lat, lng)
         .subscribe({
-          next: (data) => {
-            // 3. Gdy dane przyjdą (strumień się "odezwie"), uaktualniamy treść
-            const street = data.address?.road || 'Brak nazwy ulicy';
-            const houseNumber = data.address?.house_number || '';
-
-            popup.setContent(`<b>Adres:</b><br>${street} ${houseNumber}`);
+          next: (info) => {
+            const content = `
+              <div style="font-family: Arial, sans-serif;">
+                <b style="color: #2c3e50;">${info.country}</b>, ${info.city}<br>
+                <span style="color: #7f8c8d;">${info.address}</span>
+                <hr style="margin: 5px 0;">
+                <small>Wysokość: <b>${info.altitude} m n.p.m.</b></small>
+              </div>
+            `;
+            popup.setContent(content);
           },
-          error: (err) => {
-            // 4. Jeśli wystąpi błąd (np. brak internetu), uaktualniamy informację
-            popup.setContent('Nie udało się pobrać adresu.');
-            console.error(err);
-          }
+          error: () => popup.setContent('Błąd pobierania danych.')
         });
     });
 
