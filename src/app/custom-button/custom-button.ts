@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'button[appCustomButton], [appCustomButton], .class-custom-button',
@@ -6,4 +6,6 @@ import { Component } from '@angular/core';
   templateUrl: './custom-button.html',
   styleUrl: './custom-button.css',
 })
-export class CustomButton {}
+export class CustomButton {
+    label = input<string>('', { alias: 'appCustomButton' });
+}
