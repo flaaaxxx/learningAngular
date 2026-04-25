@@ -1,0 +1,23 @@
+<aside class="sidebar" [class.collapsed]="isCollapsed">
+
+  <button class="toggle-btn" (click)="isCollapsed = !isCollapsed">
+    <i class="material-icons">
+      {{ isCollapsed ? 'chevron_right' : 'chevron_left' }}
+    </i>
+  </button>
+
+    <div class="sidebar-header">
+        <h3>E-Skate Menu</h3>
+    </div>
+
+    <div class="button-group">
+        <button class="menu-btn"><i class="material-icons">charging_station</i> Ładowarki</button>
+        <button class="menu-btn"><i class="material-icons">route</i> Moje trasy</button>
+        <button class="menu-btn"><i class="material-icons">history</i> Historia</button>
+        <button class="menu-btn"><i class="material-icons">settings</i> Ustawienia</button>
+    </div>
+
+    <div class="sidebar-footer">
+        <p>Bateria: 85%</p>
+    </div>
+</aside>

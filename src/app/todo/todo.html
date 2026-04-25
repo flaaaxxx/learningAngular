@@ -1,0 +1,71 @@
+Oto plan rozwoju Twojej aplikacji podzielony na funkcjonalności:
+
+<ul>
+    <li>Ładowarki (Charging Points): Najważniejsza rzecz. Oznaczanie kawiarni, stacji czy parków, gdzie są
+        ogólnodostępne gniazdka.</li>
+    <li>Zasięg (Range Visualizer): Na podstawie Twojej baterii system rysuje okrąg na mapie, pokazujący jak daleko
+        dojedziesz.</li>
+    <li>Rodzaj nawierzchni (Vibration Alert): E-deski na małych kołach nienawidzą kostki brukowej. Oznaczanie
+        "czerwonych stref" z trzęsącym podłożem.</li>
+    <li>Nachylenie terenu (Battery Drain): Wykorzystanie wysokości (altitude), aby ostrzec przed podjazdami, które
+        "zjedzą" baterię.</li>
+</ul>
+
+<p>----------------------- na przyszłość</p>
+
+<p>
+    1. Katalogowanie Spotów (System Dodawania)
+
+
+    Zamiast zwykłych markerów, wprowadź system oznaczania konkretnych miejsc.
+
+    Kategorie miejsc: Dodaj ikony dla różnych typów spotów: Murek (Ledge), Schody (Stairs), Rurka (Rail), Skatepark, DIY
+    Spot.
+
+    Ocena nawierzchni: Skaterzy kochają gładki beton, a nienawidzą kostki brukowej. Dodaj pole "Jakość podłoża" (1-5
+    gwiazdek).
+
+    Zdjęcia: Możliwość wgrania zdjęcia danego murka (przez Firebase lub Cloudinary), aby inni widzieli, czy warto tam
+    jechać.
+</p>
+
+<p>
+    2. Wykorzystanie danych wysokościowych (Altitude)
+    Wykorzystaj to, co już masz w kodzie (altitude):
+
+    Spoty "Downhill": System może automatycznie oznaczać miejsca z dużym spadkiem terenu jako idealne do longboardingu
+    lub szybkich zjazdów.
+
+    Analiza trudności: Jeśli murek jest na dole stromej góry, dojazd do niego jest trudniejszy – możesz to obliczać na
+    podstawie różnicy wysokości między dwoma punktami.
+</p>
+
+<p>
+    3. "Skate Session" – Tu i Teraz
+    Funkcjonalność społecznościowa w czasie rzeczywistym:
+
+    Kto tam jest? Możliwość kliknięcia "Check-in". Inni użytkownicy widzą na mapie, że na danym spocie aktualnie jeździ
+    5 osób.
+
+    Status oświetlenia: Dodaj informację, czy spot jest oświetlony w nocy (bardzo ważne jesienią i zimą!).
+
+    Alert o "Security": Przycisk szybkiego ostrzegania: "Ochrona przegania" – marker na mapie zmienia kolor na czerwony
+    na 2 godziny.
+</p>
+
+<p>
+    4. Wykorzystanie Pogody (Open-Meteo)
+    Skoro masz już w serwisie API Open-Meteo, rozbuduj je o:
+
+    Status "Dry/Wet": Jeśli w ciągu ostatnich 2 godzin padał deszcz, wyświetlaj ostrzeżenie "Spot może być mokry".
+
+    Wind Check: Ważne przy skokach nad schodami – silny wiatr może być niebezpieczny.
+</p>
+
+<p>
+    5. Gamifikacja (Wyzwania)
+    Spot of the Week: Co tydzień jedno miejsce jest oznaczone specjalną ikoną – za zrobienie tam triku i wrzucenie
+    zdjęcia użytkownik dostaje punkty.
+
+    Linie (Lines): Możliwość rysowania na mapie całych przejazdów (składających się z kilku spotów po kolei).
+</p>
