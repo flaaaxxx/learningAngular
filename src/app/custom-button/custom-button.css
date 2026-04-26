@@ -13,6 +13,16 @@
   letter-spacing: 1px;
 }
 
+:host(.delete) {
+  background: linear-gradient(135deg, #ea666d 0%, #a24b8f 100%); /* Gradient dla nowoczesnego looku */
+}
+
+:host(.delete):hover {
+  background: linear-gradient(135deg, #a24b8f  0%, #ea666d 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
 :host:hover {
   background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
   transform: translateY(-1px);

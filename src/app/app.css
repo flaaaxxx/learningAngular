@@ -1,6 +1,6 @@
 .main-layout {
   display: flex;
-  flex: 1;        /* 🔥 zajmuje resztę miejsca */
+  flex: 1; /* zajmuje resztę miejsca */
   overflow: hidden;
 }
 
@@ -12,12 +12,6 @@
 
 .content-area {
   flex: 1;
-  height: 100%;       /* Teraz 100% odnosi się do pozostałej przestrzeni */
+  height: 100%; /* Teraz 100% odnosi się do pozostałej przestrzeni */
   position: relative;
 }
-
-/* app-map {
-  display: block;
-  width: 100%;
-  height: 100%;
-} */

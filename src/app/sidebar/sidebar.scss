@@ -1,11 +1,4 @@
 $sidebar-width: 250px;
-
-.sidebar.collapsed .sidebar-header,
-.sidebar.collapsed .button-group,
-.sidebar.collapsed .sidebar-footer {
-    display: none;
-}
-
 .sidebar {
     overflow: visible;
     position: relative;
@@ -13,7 +6,8 @@ $sidebar-width: 250px;
     height: 100%;
     transition: width 0.3s ease;
     background: color-mix(in srgb, var(--dark-bg), white 3%);
-    
+    border-top: 1px solid var(--primary);
+
     color: white;
     display: flex;
     flex-direction: column;
@@ -21,11 +15,15 @@ $sidebar-width: 250px;
 
     &.collapsed {
         width: 0;
-        padding: 0; /*  usuwa odstępy */
-        border: none; /*  usuwa obramowanie */
+        padding: 0;    /*  usuwa odstępy */
+        border: none;  /*  usuwa obramowanie */
 
         .toggle-btn {
-            left: 10px;
+            left: 12px;
+        }
+
+        .sidebar-header, .button-group, .sidebar-footer {
+            display: none;
         }
     }
 
@@ -37,8 +35,8 @@ $sidebar-width: 250px;
 
     .toggle-btn {
         position: absolute;
-        top: 10px;
-        left: 10px;
+        top: 23px;
+        left: 12px;
 
         width: 30px;
         height: 30px;
@@ -57,7 +55,7 @@ $sidebar-width: 250px;
     }
 
     .sidebar-header {
-        padding: 20px;
+        padding: 10px;
         color: var(--primary);
         text-align: center;
         border-bottom: 1px solid #30363d;
@@ -69,6 +67,9 @@ $sidebar-width: 250px;
         flex-direction: column;
         gap: 10px;
 
+        a {
+            text-decoration: none;
+        }
         .menu-btn {
             background: #21262d;
             color: white;

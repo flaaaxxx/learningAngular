@@ -15,7 +15,7 @@ body, html {
 
 /* Dostosowanie pozycji kontrolki zoom w Leaflet */
 .leaflet-top {
-  top: 35px;
+  top: 50px;
 }
 
 /*  */
