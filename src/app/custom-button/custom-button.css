@@ -19,8 +19,6 @@
 
 :host(.delete):hover {
   background: linear-gradient(135deg, #a24b8f  0%, #ea666d 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 :host:hover {
