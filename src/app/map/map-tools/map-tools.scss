@@ -1,0 +1,114 @@
+$icon-color: #8b949e;
+
+.map-controls-panel {
+    position: absolute;
+    top: 20px; // Poniżej headera
+    right: 20px;
+    z-index: 1000;
+    width: 180px;
+    background: rgba(13, 17, 23, 0.9); // $dark-bg z lekkim prześwitem
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    color: white;
+    overflow: hidden;
+    border: 1px solid (var(--primary));
+
+    .panel-header {
+        background: #161b22;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: grab;
+        border-bottom: 1px solid #30363d;
+
+        i {
+            font-size: 18px;
+            color: $icon-color;
+        }
+
+        span {
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        &:active {
+            cursor: grabbing;
+        }
+    }
+
+
+    .panel-body {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        button {
+            background: transparent;
+            border: 1px solid transparent;
+            color: $icon-color;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+
+            i {
+                font-size: 20px;
+            }
+
+            span {
+                font-size: 13px;
+            }
+
+            &:hover {
+                background: rgba(88, 166, 255, 0.1);
+                color: white;
+            }
+
+            &.active {
+                background: var(--primary);
+                color: white;
+                box-shadow: 0 0 15px rgba(88, 166, 255, 0.4);
+            }
+
+            &.clear-btn:hover {
+                background: rgba(248, 81, 73, 0.1);
+                color: #f85149;
+            }
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #30363d;
+            margin: 4px 0;
+        }
+    }
+
+    .close-btn {
+        background: transparent;
+        border: none;
+        color: $icon-color;
+        cursor: pointer;
+        display: flex;
+        padding: 2px;
+        border-radius: 4px;
+        transition: 0.2s;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f85149; // Czerwony akcent przy zamykaniu
+        }
+
+        i {
+            font-size: 18px;
+        }
+    }
+}

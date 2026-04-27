@@ -1,0 +1,34 @@
+    <div class="map-controls-panel" cdkDrag [cdkDragBoundary]="boundaryElement()">
+        <div class="panel-header" cdkDragHandle>
+            <i class="material-icons">drag_indicator</i>
+            <span>Edytor Linii</span>
+
+            <button class="close-btn" (click)="onClose()">
+                <i class="material-icons">close</i>
+            </button>
+        </div>
+    
+        <div class="panel-body">
+            <button [class.active]="mode === DRAW_MODE.SINGLE" (click)="setMode(DRAW_MODE.SINGLE)" title="Linia między dwoma punktami">
+            <i class="material-icons">straighten</i>
+            <span>Dwa punkty</span>
+            </button>
+
+            <button [class.active]="mode === DRAW_MODE.CONTINUOUS" (click)="setMode(DRAW_MODE.CONTINUOUS)" title="Kontynuuj od ostatniego punktu">
+            <i class="material-icons">timeline</i>
+            <span>Ciągła trasa</span>
+            </button>
+
+            <button [class.active]="mode === DRAW_MODE.STAR" (click)="setMode(DRAW_MODE.STAR)" title="Wiele linii od startu">
+            <i class="material-icons">hub</i>
+            <span>Od punktu startu</span>
+            </button>
+
+            <hr>
+
+            <button class="clear-btn" (click)="onClear()">
+            <i class="material-icons">delete_sweep</i>
+            <span>Wyczyść mapę</span>
+            </button>
+        </div>
+    </div>

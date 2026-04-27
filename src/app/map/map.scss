@@ -1,104 +1,15 @@
 #map {
   width: 100%;
-  height: 100%; // To zadziała tylko jeśli app-map ma wysokość
+  height: 100%;      // To zadziała tylko jeśli app-map ma wysokość
   min-height: 400px; // Dla testu ustaw sztywną wysokość
+  cursor: default;
 }
 
 .wrapper {
     height: 100%;
 }
 
-.map-controls-panel {
-  position: absolute;
-  top: 80px; // Poniżej headera
-  left: 20px;
-  z-index: 1000;
-  width: 180px;
-  background: rgba(13, 17, 23, 0.9); // $dark-bg z lekkim prześwitem
-  border: 1px solid #30363d;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  color: white;
-  overflow: hidden;
-
-  .panel-header {
-    background: #161b22;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: grab;
-    border-bottom: 1px solid #30363d;
-    
-    i { font-size: 18px; color: #8b949e; }
-    span { font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-
-    &:active { cursor: grabbing; }
-  }
-
-  .panel-body {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-    button {
-      background: transparent;
-      border: 1px solid transparent;
-      color: #8b949e;
-      padding: 10px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-
-      i { font-size: 20px; }
-      span { font-size: 13px; }
-
-      &:hover {
-        background: rgba(88, 166, 255, 0.1);
-        color: white;
-      }
-
-      &.active {
-        background: #58a6ff; // Twój $primary
-        color: white;
-        box-shadow: 0 0 15px rgba(88, 166, 255, 0.4);
-      }
-
-      &.clear-btn:hover {
-        background: rgba(248, 81, 73, 0.1);
-        color: #f85149;
-      }
-    }
-
-    hr { border: 0; border-top: 1px solid #30363d; margin: 4px 0; }
-  }
-}
-
-.close-btn {
-    background: transparent;
-    border: none;
-    color: #8b949e;
-    cursor: pointer;
-    display: flex;
-    padding: 2px;
-    border-radius: 4px;
-    transition: 0.2s;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: #f85149; // Czerwony akcent przy zamykaniu
-    }
-
-    i { font-size: 18px; }
-  }
-
-
-  // Przycisk "Fab", który pojawia się po zamknięciu panelu
+ // Przycisk "Fab", który pojawia się po zamknięciu panelu
 .panel-trigger {
   position: absolute;
   top: 20px;
@@ -107,7 +18,7 @@
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: #58a6ff; // Twój kolor primary
+  background: var(--primary); // kolor primary
   color: white;
   border: none;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -116,8 +27,103 @@
 
   &:hover {
     transform: scale(1.1);
-    background: lighten(#58a6ff, 5%);
+    background: color-mix(in srgb, var(--primary), white 5%);
   }
 
   i { font-size: 24px; }
+}
+
+
+.webcam-window {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 300px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 9999; /* Wyżej niż Leaflet (1000) */
+  overflow: hidden;
+  font-family: sans-serif;
+  animation: fadeIn 0.3s ease;
+}
+
+.webcam-header {
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #ff4d4d;
+  border-radius: 50%;
+  box-shadow: 0 0 5px #ff4d4d;
+  animation: pulse 1.5s infinite;
+}
+
+.title {
+  flex: 1;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #333;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+}
+
+.webcam-body img {
+  width: 100%;
+  display: block;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.info-bar {
+  padding: 12px;
+}
+
+.info-bar strong {
+  font-size: 14px;
+  display: block;
+}
+
+.info-bar p {
+  font-size: 11px;
+  color: #666;
+  margin: 4px 0;
+}
+
+.info-bar a {
+  font-size: 11px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.loader {
+  padding: 40px;
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
 }

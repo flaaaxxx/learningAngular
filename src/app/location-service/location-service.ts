@@ -42,7 +42,7 @@ export class LocationService {
       }),
       catchError(err => {
         console.error('Błąd:', err);
-        return of({ country: 'Błąd', city: '-', address: '-', altitude: 0 });
+        return of({ country: 'Nieznany kraj', city: 'Nieznane miasto', address: 'Brak adresu', altitude: 0 });
       })
     );
   }

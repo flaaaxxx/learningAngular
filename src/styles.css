@@ -11,11 +11,13 @@ body, html {
 }
 
 
-/* dymek na mapie, który pokazuje informacje o danym miejscu, takie jak nazwa, współrzędne i dodatkowe informacje. Dymek zawiera również przycisk, który może być użyty do wykonania określonej akcji, np. otwarcia szczegółów miejsca. */
-
 /* Dostosowanie pozycji kontrolki zoom w Leaflet */
 .leaflet-top {
-  top: 50px;
+  top: 87%;
+}
+
+.leaflet-left{
+  left: 96%;
 }
 
 /*  */
