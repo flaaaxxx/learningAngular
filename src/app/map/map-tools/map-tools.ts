@@ -6,6 +6,7 @@ import { Component, input, output } from '@angular/core';
 
 export enum DrawMode {
   SINGLE,
+  MANY_POINTS,
   CONTINUOUS,
   STAR
 }
@@ -29,6 +30,7 @@ export class MapTools {
   setMode(mode: DrawMode) {
     this.mode = mode;
     this.modeChange.emit(mode);
+    this.onClose();
   }
 
   onClear() {

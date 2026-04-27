@@ -1,3 +1,5 @@
+@import "leaflet/dist/leaflet.css";
+
 :root {
   --dark-bg: #0d1117;
   --primary: #58a6ff;
@@ -13,7 +15,7 @@ body, html {
 
 /* Dostosowanie pozycji kontrolki zoom w Leaflet */
 .leaflet-top {
-  top: 90% !important;
+  top: 87% !important;
 }
 
 .leaflet-left{

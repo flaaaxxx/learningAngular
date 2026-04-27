@@ -33,6 +33,17 @@ export default class MapComponent implements AfterViewInit {
   private lines: L.Polyline[] = [];             // Aktualnie narysowana linia
   private markerData = new Map<L.Marker, LocationInfo>();
 
+
+  defaultMarkerIndicatorIcon = L.icon({
+    iconUrl: 'map/markerIcon2x.png',
+    shadowUrl: 'map/markerShadow2ng',
+
+    iconSize: [25, 41],    // rozmiar z dokumentacji domyślnej ikony
+    iconAnchor: [12, 41],  // punkt "szpilki", który dotyka mapy
+    popupAnchor: [1, -34], // skąd ma wychodzić dymek
+    shadowSize: [0, 0],   // rozmiar cienia
+  });
+
   ngAfterViewInit() {
     this.initMap();
     this.setupMapClickListener();
@@ -70,6 +81,8 @@ export default class MapComponent implements AfterViewInit {
   private initMap() {
     this.map = L.map('map').setView(this.homeCooridantes, this.zoomStart);
 
+    // L.Marker.prototype.options.icon = this.defaultMarkerIndicatorIcon;
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors',
       maxZoom: 20
@@ -91,28 +104,28 @@ export default class MapComponent implements AfterViewInit {
 
 
     // 2. Szukanie kamery
-    this.isLoadingCamera = true;
-    this.activeWebcam = null; // Resetujemy poprzednią kamerę
+    // this.isLoadingCamera = true;
+    // this.activeWebcam = null; // Resetujemy poprzednią kamerę
 
-    this.activeWebcam$ = this.webcamService.getNearbyWebcam(latlng.lat, latlng.lng);
+    // this.activeWebcam$ = this.webcamService.getNearbyWebcam(latlng.lat, latlng.lng);
 
 
-    this.webcamService.getNearbyWebcam(latlng.lat, latlng.lng).subscribe(cam => {
+    // this.webcamService.getNearbyWebcam(latlng.lat, latlng.lng).subscribe(cam => {
 
-      console.log('Otrzymane dane kamery:', cam);
-      this.activeWebcam = cam;
-      this.isLoadingCamera = false;
+    //   console.log('Otrzymane dane kamery:', cam);
+    //   this.activeWebcam = cam;
+    //   this.isLoadingCamera = false;
 
-      if (!cam) {
-        console.log('Brak kamer w promieniu 15km.');
-      }
-    });
+    //   if (!cam) {
+    //     console.log('Brak kamer w promieniu 15km.');
+    //   }
+    // });
 
 
   }
 
   private createMarker(latlng: L.LatLng): L.Marker {
-    const marker = L.marker(latlng).addTo(this.map);
+    const marker = L.marker(latlng, { icon: this.defaultMarkerIndicatorIcon, draggable: true }).addTo(this.map);
 
     marker.bindPopup('Szukam adresu...', {
       closeButton: false,     // usuwa przycisk zamykania
@@ -122,6 +135,12 @@ export default class MapComponent implements AfterViewInit {
 
     marker.on('mouseover', () => marker.openPopup());
     marker.on('mouseout', () => marker.closePopup());
+
+    marker.on('dragend', (event) => {
+      const newPos = event.target.getLatLng();
+      this.loadLocationData(marker, newPos);
+      marker.openPopup();
+    });
 
     return marker;
   }
@@ -197,58 +216,52 @@ export default class MapComponent implements AfterViewInit {
 
     // 2. Jeśli mamy już punkt odniesienia, rysujemy linię
     if (this.firstPoint) {
-      const line = L.polyline([this.firstPoint, latlng], {
+      // Pobieramy ostatni marker (to jest nasz start dla tej linii)
+      const startMarker = this.tempMarkers[this.tempMarkers.length - 2];
+      const endMarker = marker;
+
+      const line = L.polyline([startMarker.getLatLng(), endMarker.getLatLng()], {
         color: '#58a6ff',
         weight: 4,
         opacity: 0.8,
         dashArray: this.mode === DrawMode.SINGLE ? '10, 10' : '5, 5'
       }).addTo(this.map);
 
+
+      // Funkcja odświeżająca dystans na etykiecie
+      const updateDistanceLabel = () => {
+        const distance = startMarker.getLatLng().distanceTo(endMarker.getLatLng());
+        line.setLatLngs([startMarker.getLatLng(), endMarker.getLatLng()]);
+
+        // Podpinamy tooltip (permanent: true sprawia, że jest zawsze widoczny)
+        line.bindTooltip(this.formatDistance(distance), {
+          permanent: true,
+          direction: 'center',
+          className: 'distance-tooltip' // mozesz dodać własne style dla tej klasy w CSS
+        }).openTooltip();
+      };
+
+      // Inicjalne obliczenie
+      updateDistanceLabel();
       this.lines.push(line);
+
+      // KIEDY PRZESUWASZ START:
+      startMarker.on('drag', () => {
+        updateDistanceLabel();
+      });
+
+      // KIEDY PRZESUWASZ KONIEC:
+      endMarker.on('drag', () => {
+        updateDistanceLabel();
+      });
     }
   }
 
-
-  // private handlePointSelection(latlng: L.LatLng) {
-  //   if (!this.firstPoint) {
-  //     // KROK 1: Zaznaczenie pierwszego punktu
-
-  //     if (this.mode === DrawMode.SINGLE) {
-  //       this.clearAllLines(); // Usuwamy starą linię i markery, jeśli istnieją
-  //     }
-
-  //     this.firstPoint = latlng;
-  //     const marker = L.marker(latlng, { title: 'Punkt startowy' }).addTo(this.map);
-  //     this.tempMarkers.push(marker);
-
-  //     console.log('Zaznaczono pierwszy punkt. Kliknij drugi raz, aby narysować linię.');
-  //   } else {
-  //     // KROK 2: Zaznaczenie drugiego punktu i rysowanie linii
-  //     const secondPoint = latlng;
-  //     const marker = L.marker(secondPoint, { title: 'Punkt końcowy' }).addTo(this.map);
-  //     this.tempMarkers.push(marker);
-
-  //     // Rysowanie linii prostej między punktami
-  //     const pointList = [this.firstPoint, secondPoint];
-
-  //     const currentLine = L.polyline(pointList, {
-  //       color: '#58a6ff',
-  //       weight: 4,
-  //       opacity: 0.8,
-  //       dashArray: '10, 10'// linia przerywana
-  //     }).addTo(this.map);
-
-  //     this.lines.push(currentLine);
-
-  //     // Dopasowanie widoku mapy, aby obiekt był widoczny
-  //     //this.map.fitBounds(currentLine.getBounds(), { padding: [200, 200] });
-
-  //     console.log('Linia narysowana!');
-
-  //     // Resetujemy pierwszy punkt, aby można było zacząć nową linię
-  //     this.firstPoint = null;
-  //   }
-  // }
+  private formatDistance(d: number): string {
+    return d > 1000
+      ? `${(d / 1000).toFixed(2)} km`
+      : `${Math.round(d)} m`;
+  }
 
   private addHomeCircle() {
     L.circle(this.homeCooridantes, {
