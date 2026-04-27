@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "ng serve",
+      "name": "ng serve --host=0.0.0.0 --port=4200 --disable-host-check",
       "type": "chrome",
       "request": "launch",
       "preLaunchTask": "npm: start",

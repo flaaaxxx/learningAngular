@@ -1,0 +1,14 @@
+@use '@angular/material' as mat;
+
+.button-container {
+  display: flex;
+  gap: 10px;
+  border: 1px solid #ccc;
+}
+
+:host {
+  mat-icon {
+    color: red;
+    margin-bottom: -5px;
+  }
+}

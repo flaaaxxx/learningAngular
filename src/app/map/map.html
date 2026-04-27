@@ -1,0 +1,51 @@
+<div class="wrapper" #mapBoundary>
+
+    <div id="map"></div>
+
+    @if (!isPanelVisible) {
+    <button class="panel-trigger" (click)="toggleePanel()" title="Otwórz narzędzia">
+        <i class="material-icons">build</i>
+    </button>
+    } @else {
+    <app-map-tools [boundaryElement]="mapBoundary" (modeChange)="setMode($event)" (clear)="clearAllLines()"
+        (close)="isPanelVisible = false">
+    </app-map-tools>
+    }
+
+    <!-- @if (activeWebcam) {
+  <div class="webcam-window">
+    <div class="webcam-header">
+      <span>LIVE: {{ activeWebcam.city }}</span>
+      <button (click)="activeWebcam = null">×</button>
+    </div>
+    
+    <div class="webcam-body">
+      <img [src]="activeWebcam.image" [alt]="activeWebcam.title" class="cam-img">
+      
+      <div class="webcam-footer">
+        <p>{{ activeWebcam.title }}</p>
+        <a [href]="activeWebcam.url" target="_blank">Otwórz źródło</a>
+      </div>
+    </div>
+  </div>
+} -->
+
+    @if (activeWebcam$ | async; as cam) {
+    <div class="webcam-window">
+        <!-- <img [src]="cam.image"> -->
+
+
+            <iframe
+    [src]="cam.playerUrl" 
+        width="100%" 
+        height="200" 
+        frameborder="0" 
+        allowfullscreen
+        allow="autoplay">
+      </iframe>
+    </div>
+
+
+    }
+
+</div>

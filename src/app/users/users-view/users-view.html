@@ -1,1 +1,21 @@
-<p>users works!</p>
+<app-title>
+    Użytkownicy
+    <span class="material-icons icon" ngProjectAs="icon">
+        <mat-icon aria-hidden="false" aria-label="Person" fontIcon="person" class="a"></mat-icon>
+    </span>
+
+</app-title>
+
+
+<ul>
+    @for (user of users; track user.id) {
+        <li>
+            {{ user.name }}
+        </li>
+    }
+</ul>
+
+<div class="button-container">
+    <button appCustomButton="Dodaj użytkownika" (click)="addUser()"></button>
+    <button class="delete" appCustomButton="Usuń użytkownika" (click)="deleteUser()"></button>
+</div>

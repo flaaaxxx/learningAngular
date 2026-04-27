@@ -1,0 +1,40 @@
+<aside class="sidebar" [class.collapsed]="isCollapsed">
+
+  <button class="toggle-btn" (click)="isCollapsed = !isCollapsed">
+    <i class="material-icons">
+      {{ isCollapsed ? 'chevron_right' : 'chevron_left' }}
+    </i>
+  </button>
+
+    <div class="sidebar-header">
+        <h3>Menu</h3>
+    </div>
+
+    <div class="button-group">
+        <a class="menu-btn" routerLink="/users">
+            <i class="material-icons">person</i> Users
+        </a>
+        <a class="menu-btn" routerLink="/map">
+            <i class="material-icons">map</i> Mapa
+        </a>
+        <a class="menu-btn" routerLink="/charging-stations">
+            <i class="material-icons">charging_station</i> Ładowarki
+        </a>
+        <a class="menu-btn" routerLink="/routes">
+            <i class="material-icons">route</i> Moje trasy
+        </a>
+        <a class="menu-btn" routerLink="/history">
+            <i class="material-icons">history</i> Historia
+        </a>
+        <a class="menu-btn" routerLink="/settings">
+            <i class="material-icons">settings</i> Ustawienia
+        </a>
+        <a class="menu-btn" routerLink="/todo">
+            <i class="material-icons">person</i> Todo
+        </a>
+    </div>
+
+    <div class="sidebar-footer">
+        <p>Bateria: 85%</p>
+    </div>
+</aside>
