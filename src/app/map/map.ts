@@ -98,29 +98,151 @@ export default class MapComponent implements AfterViewInit {
   activeWebcam: WebcamData | null = null;
   isLoadingCamera = false;
 
+  // private handleMapClick(latlng: L.LatLng) {
+  //   this.drawLine(latlng);
+  //   this.recalculateTotalDistances();
+
+  //   // 2. Szukanie kamery
+  //   // this.isLoadingCamera = true;
+  //   // this.activeWebcam = null; // Resetujemy poprzednią kamerę
+
+  //   // this.activeWebcam$ = this.webcamService.getNearbyWebcam(latlng.lat, latlng.lng);
+
+
+  //   // this.webcamService.getNearbyWebcam(latlng.lat, latlng.lng).subscribe(cam => {
+
+  //   //   console.log('Otrzymane dane kamery:', cam);
+  //   //   this.activeWebcam = cam;
+  //   //   this.isLoadingCamera = false;
+
+  //   //   if (!cam) {
+  //   //     console.log('Brak kamer w promieniu 15km.');
+  //   //   }
+  //   // });
+
+
+  // }
   private handleMapClick(latlng: L.LatLng) {
-    this.drawLine(latlng);
-    this.recalculateTotalDistances();
+    switch (this.mode) {
+      case DrawMode.SINGLE: this.drawSingleMode(latlng); break;
+      case DrawMode.CONTINUOUS: this.drawContinuousMode(latlng); break;
+      case DrawMode.STAR: this.drawStarMode(latlng); break;
+      case DrawMode.MANY_POINTS: this.drawManyPointsMode(latlng); break;
+    }
+  }
 
-    // 2. Szukanie kamery
-    // this.isLoadingCamera = true;
-    // this.activeWebcam = null; // Resetujemy poprzednią kamerę
+  // --- STRATEGIE RYSOWANIA ---
 
-    // this.activeWebcam$ = this.webcamService.getNearbyWebcam(latlng.lat, latlng.lng);
+  private drawSingleMode(latlng: L.LatLng) {
+    if (this.tempMarkers.length >= 2) this.clearAllLines();
 
+    const marker = this.initMarkerWithData(latlng);
 
-    // this.webcamService.getNearbyWebcam(latlng.lat, latlng.lng).subscribe(cam => {
+    if (this.firstPoint) {
+      this.createConnectedLine(this.tempMarkers[0], marker, 'SINGLE');
+      this.firstPoint = null;
+    } else {
+      this.firstPoint = latlng;
+    }
+  }
 
-    //   console.log('Otrzymane dane kamery:', cam);
-    //   this.activeWebcam = cam;
-    //   this.isLoadingCamera = false;
+  private drawContinuousMode(latlng: L.LatLng) {
+    const marker = this.initMarkerWithData(latlng);
 
-    //   if (!cam) {
-    //     console.log('Brak kamer w promieniu 15km.');
-    //   }
-    // });
+    if (this.firstPoint) {
+      const prevMarker = this.tempMarkers[this.tempMarkers.length - 2];
+      this.createConnectedLine(prevMarker, marker, 'CONTINUOUS');
+    }
+    this.firstPoint = latlng;
+  }
 
+  private drawStarMode(latlng: L.LatLng) {
+    const marker = this.initMarkerWithData(latlng);
 
+    if (!this.firstPoint) {
+      this.firstPoint = latlng;
+    } else {
+      const centerMarker = this.tempMarkers[0];
+      this.createConnectedLine(centerMarker, marker, 'STAR');
+    }
+  }
+
+  private drawManyPointsMode(latlng: L.LatLng) {
+    const marker = this.initMarkerWithData(latlng);
+
+    if (this.firstPoint) {
+      const prevMarker = this.tempMarkers[this.tempMarkers.length - 2];
+      this.createConnectedLine(prevMarker, marker, 'MANY_POINTS');
+      this.firstPoint = null;
+    } else {
+      this.firstPoint = latlng;
+    }
+  }
+
+  // --- FUNKCJE POMOCNICZE (REUŻYWALNE) ---
+
+  /** Tworzy marker, ładuje dane i dodaje do rejestru */
+  private initMarkerWithData(latlng: L.LatLng): L.Marker {
+    const marker = this.createMarker(latlng);
+    this.loadLocationData(marker, latlng);
+    this.tempMarkers.push(marker);
+    return marker;
+  }
+
+  /** Tworzy linię między dwoma markerami i wiąże ich ruch z jej aktualizacją */
+  private createConnectedLine(start: L.Marker, end: L.Marker, type: string): L.Polyline {
+    const line = L.polyline([start.getLatLng(), end.getLatLng()], {
+      color: '#58a6ff',
+      weight: 4,
+      opacity: 0.8,
+      dashArray: type === 'SINGLE' ? '10, 10' : '0'
+    }).addTo(this.map);
+
+    this.lines.push(line);
+
+    // Reakcja na przeciąganie
+    const onDrag = () => {
+      line.setLatLngs([start.getLatLng(), end.getLatLng()]);
+      this.updateLineTooltip(line, start, end, type);
+      if (type === 'CONTINUOUS') this.recalculateTotalDistances();
+    };
+
+    start.on('drag', onDrag);
+    end.on('drag', onDrag);
+
+    // Inicjalne ustawienie tooltipa
+    this.updateLineTooltip(line, start, end, type);
+
+    return line;
+  }
+
+  /** Zarządza tylko i wyłącznie treścią etykiety */
+  private updateLineTooltip(line: L.Polyline, start: L.Marker, end: L.Marker, type: string) {
+    const dist = start.getLatLng().distanceTo(end.getLatLng());
+    let content = this.formatDistance(dist);
+
+    if (type === 'CONTINUOUS') {
+      // W trybie ciągłym przeliczamy sumę (obsługiwane też przez recalculateTotalDistances)
+      const runningTotal = this.calculateRunningTotalUntil(line);
+      content = `Suma: ${this.formatDistance(runningTotal)}`;
+    }
+
+    line.bindTooltip(content, {
+      permanent: true,
+      direction: 'center',
+      className: type === 'CONTINUOUS' ? 'distance-tooltip-total' : 'distance-tooltip'
+    }).openTooltip();
+  }
+
+  /** Oblicza sumę dystansów do konkretnej linii włącznie */
+  private calculateRunningTotalUntil(targetLine: L.Polyline): number {
+    let total = 0;
+    for (const line of this.lines) {
+      const pts = line.getLatLngs() as L.LatLng[];
+      total += pts[0].distanceTo(pts[1]);
+      if (line === targetLine) break;
+    }
+    return total;
   }
 
   private createMarker(latlng: L.LatLng): L.Marker {
@@ -176,124 +298,6 @@ export default class MapComponent implements AfterViewInit {
         );
       }
     });
-  }
-
-  private drawLine(latlng: L.LatLng) {
-    switch (this.mode) {
-      case DrawMode.SINGLE:
-        if (this.tempMarkers.length > 1) {
-          this.clearAllLines(); // Usuwamy starą linię i markery, jeśli istnieją
-        }
-        this.drawOneLine(latlng);
-        // W trybie SINGLE: pierwszy klik ustawia punkt, drugi go czyści
-        if (!this.firstPoint) {
-          this.firstPoint = latlng;
-        }
-        break;
-      case DrawMode.MANY_POINTS:
-        this.drawOneLine(latlng);
-        if (this.firstPoint) {
-          // Jeśli właśnie narysowaliśmy linię (mieliśmy firstPoint), 
-          // to go czyścimy, żeby następny klik był "nowym startem"
-          this.firstPoint = null;
-        } else {
-          // Jeśli to był pierwszy klik w parze
-          this.firstPoint = latlng;
-        }
-        break;
-      case DrawMode.CONTINUOUS:
-        // Każdy nowy punkt staje się punktem startowym dla kolejnego segmentu
-        this.drawOneLine(latlng);
-        this.firstPoint = latlng;
-
-        break;
-      case DrawMode.STAR:
-        this.drawOneLine(latlng);
-        // Jeśli firstPoint już istnieje, nie zmieniamy go (zawsze rysuj od pierwszego)
-        // Jeśli jest null (pierwszy klik), ustawiamy go
-        if (!this.firstPoint) {
-          this.firstPoint = latlng;
-        }
-        break;
-    }
-  }
-
-  private drawOneLine(latlng: L.LatLng) {
-    // 1. Zawsze twórz marker dla klikniętego miejsca
-    const marker = this.createMarker(latlng);
-    this.loadLocationData(marker, latlng);
-    this.tempMarkers.push(marker);
-
-    // 2. Jeśli mamy już punkt odniesienia, rysujemy linię
-    if (this.firstPoint) {
-
-      // Pobieramy ostatni marker (to jest nasz start dla tej linii)
-      // const startMarker = this.tempMarkers[this.tempMarkers.length - 2];
-      const startMarker = this.mode === DrawMode.STAR ? this.tempMarkers[0] : this.tempMarkers[this.tempMarkers.length - 2];
-
-      const endMarker = marker;
-
-      const line = L.polyline([startMarker.getLatLng(), endMarker.getLatLng()], {
-        color: '#58a6ff',
-        weight: 4,
-        opacity: 0.8,
-        dashArray: this.mode === DrawMode.SINGLE ? '10, 10' : '5, 5'
-      }).addTo(this.map);
-
-      const segmentDistance = startMarker.getLatLng().distanceTo(endMarker.getLatLng());
-
-      if (this.mode === DrawMode.CONTINUOUS || this.mode === DrawMode.MANY_POINTS) {
-        // Dodajemy do ogólnej sumy
-        this.totalDistance += segmentDistance;
-
-        // Wyświetlamy sumę skumulowaną na końcu odcinka
-        line.bindTooltip(`Suma: ${this.formatDistance(this.totalDistance)}`, {
-          permanent: true,
-          direction: 'top',
-          className: 'distance-tooltip-total'
-        }).openTooltip();
-      } else {
-        // W trybie SINGLE wyświetlamy po prostu długość odcinka
-        line.bindTooltip(this.formatDistance(segmentDistance), {
-          permanent: true,
-          direction: 'center',
-          className: 'distance-tooltip'
-        }).openTooltip();
-      }
-
-      // Funkcja odświeżająca dystans na etykiecie
-      const updateDistanceLabel = () => {
-        const distance = startMarker.getLatLng().distanceTo(endMarker.getLatLng());
-        line.setLatLngs([startMarker.getLatLng(), endMarker.getLatLng()]);
-
-        // Podpinamy tooltip (permanent: true sprawia, że jest zawsze widoczny)
-        line.bindTooltip(this.formatDistance(distance), {
-          permanent: true,
-          direction: 'center',
-          className: 'distance-tooltip' // mozesz dodać własne style dla tej klasy w CSS
-        }).openTooltip();
-      };
-
-      // Inicjalne obliczenie
-      updateDistanceLabel();
-
-      if (this.mode === DrawMode.MANY_POINTS && this.lines.length % 2 === 0) {
-
-      }
-      this.lines.push(line);
-
-      // KIEDY PRZESUWASZ START:
-      startMarker.on('drag', () => {
-        this.recalculateTotalDistances();
-        updateDistanceLabel();
-      });
-
-      // KIEDY PRZESUWASZ KONIEC:
-      endMarker.on('drag', () => {
-        this.recalculateTotalDistances();
-        updateDistanceLabel();
-      });
-    }
   }
 
   private recalculateTotalDistances() {
