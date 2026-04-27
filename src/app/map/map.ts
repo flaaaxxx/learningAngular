@@ -30,7 +30,9 @@ export default class MapComponent implements AfterViewInit {
   private tempMarkers: L.Marker[] = [];          // Lista markerów pomocniczych
   private lines: L.Polyline[] = [];             // Aktualnie narysowana linia
   private markerData = new Map<L.Marker, LocationInfo>();
-  private totalDistance = 0;
+
+  activeWebcam: WebcamData | null = null;
+  isLoadingCamera = false;
 
   defaultMarkerIndicatorIcon = L.icon({
     iconUrl: 'map/markerIcon2x.png',
@@ -51,7 +53,6 @@ export default class MapComponent implements AfterViewInit {
 
   setMode(newMode: DrawMode) {
     this.mode = newMode;
-    this.totalDistance = 0;
     this.clearAllLines(); // Resetujemy przy zmianie trybu
   }
 
@@ -94,34 +95,6 @@ export default class MapComponent implements AfterViewInit {
     });
   }
 
-
-  activeWebcam: WebcamData | null = null;
-  isLoadingCamera = false;
-
-  // private handleMapClick(latlng: L.LatLng) {
-  //   this.drawLine(latlng);
-  //   this.recalculateTotalDistances();
-
-  //   // 2. Szukanie kamery
-  //   // this.isLoadingCamera = true;
-  //   // this.activeWebcam = null; // Resetujemy poprzednią kamerę
-
-  //   // this.activeWebcam$ = this.webcamService.getNearbyWebcam(latlng.lat, latlng.lng);
-
-
-  //   // this.webcamService.getNearbyWebcam(latlng.lat, latlng.lng).subscribe(cam => {
-
-  //   //   console.log('Otrzymane dane kamery:', cam);
-  //   //   this.activeWebcam = cam;
-  //   //   this.isLoadingCamera = false;
-
-  //   //   if (!cam) {
-  //   //     console.log('Brak kamer w promieniu 15km.');
-  //   //   }
-  //   // });
-
-
-  // }
   private handleMapClick(latlng: L.LatLng) {
     switch (this.mode) {
       case DrawMode.SINGLE: this.drawSingleMode(latlng); break;
@@ -129,6 +102,25 @@ export default class MapComponent implements AfterViewInit {
       case DrawMode.STAR: this.drawStarMode(latlng); break;
       case DrawMode.MANY_POINTS: this.drawManyPointsMode(latlng); break;
     }
+
+
+    //   // 2. Szukanie kamery
+    //   // this.isLoadingCamera = true;
+    //   // this.activeWebcam = null; // Resetujemy poprzednią kamerę
+
+    //   // this.activeWebcam$ = this.webcamService.getNearbyWebcam(latlng.lat, latlng.lng);
+
+
+    //   // this.webcamService.getNearbyWebcam(latlng.lat, latlng.lng).subscribe(cam => {
+
+    //   //   console.log('Otrzymane dane kamery:', cam);
+    //   //   this.activeWebcam = cam;
+    //   //   this.isLoadingCamera = false;
+
+    //   //   if (!cam) {
+    //   //     console.log('Brak kamer w promieniu 15km.');
+    //   //   }
+    //   // });
   }
 
   // --- STRATEGIE RYSOWANIA ---
@@ -194,7 +186,7 @@ export default class MapComponent implements AfterViewInit {
     const line = L.polyline([start.getLatLng(), end.getLatLng()], {
       color: '#58a6ff',
       weight: 4,
-      opacity: 0.8,
+      opacity: 0.9,
       dashArray: type === 'SINGLE' ? '10, 10' : '0'
     }).addTo(this.map);
 
@@ -301,25 +293,15 @@ export default class MapComponent implements AfterViewInit {
   }
 
   private recalculateTotalDistances() {
+    let runningTotal = 0;
 
-    if (this.mode === DrawMode.CONTINUOUS) {
+    this.lines.forEach((line, index) => {
+      const latlngs = line.getLatLngs() as L.LatLng[];
+      const dist = latlngs[0].distanceTo(latlngs[1]);
+      runningTotal += dist;
+      line.setTooltipContent(`Suma: ${this.formatDistance(runningTotal)}`);
+    });
 
-      let runningTotal = 0;
-
-      this.lines.forEach((line, index) => {
-        const latlngs = line.getLatLngs() as L.LatLng[];
-        const dist = latlngs[0].distanceTo(latlngs[1]);
-        runningTotal += dist;
-
-        if (this.mode === DrawMode.CONTINUOUS || this.mode === DrawMode.MANY_POINTS) {
-          line.setTooltipContent(`Suma: ${this.formatDistance(runningTotal)}`);
-        } else {
-          line.setTooltipContent(this.formatDistance(dist));
-        }
-      });
-
-      this.totalDistance = runningTotal; // Aktualizujemy globalny licznik
-    }
   }
 
   private formatDistance(d: number): string {

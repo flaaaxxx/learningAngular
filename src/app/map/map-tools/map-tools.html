@@ -9,25 +9,25 @@
     </div>
 
     <div class="panel-body">
-        <button [class.active]="mode === DRAW_MODE.SINGLE" (click)="setMode(DRAW_MODE.SINGLE)"
+        <button [class.active]="currentMode() === DRAW_MODE.SINGLE" (click)="setMode(DRAW_MODE.SINGLE)"
             title="Linia między dwoma punktami">
             <i class="material-icons">straighten</i>
             <span>Dwa punkty</span>
         </button>
 
-        <button [class.active]="mode === DRAW_MODE.MANY_POINTS" (click)="setMode(DRAW_MODE.MANY_POINTS)"
+        <button [class.active]="currentMode() === DRAW_MODE.MANY_POINTS" (click)="setMode(DRAW_MODE.MANY_POINTS)"
             title="Wiele linii między kolejnymi punktami">
             <i class="material-icons">edit_road</i>
             <span>Wiele punktów</span>
         </button>
 
-        <button [class.active]="mode === DRAW_MODE.CONTINUOUS" (click)="setMode(DRAW_MODE.CONTINUOUS)"
+        <button [class.active]="currentMode() === DRAW_MODE.CONTINUOUS" (click)="setMode(DRAW_MODE.CONTINUOUS)"
             title="Kontynuuj od ostatniego punktu">
             <i class="material-icons">timeline</i>
             <span>Ciągła trasa</span>
         </button>
 
-        <button [class.active]="mode === DRAW_MODE.STAR" (click)="setMode(DRAW_MODE.STAR)"
+        <button [class.active]="currentMode() === DRAW_MODE.STAR" (click)="setMode(DRAW_MODE.STAR)"
             title="Wiele linii od startu">
             <i class="material-icons">hub</i>
             <span>Od punktu startu</span>

@@ -20,6 +20,7 @@ export enum DrawMode {
 })
 export class MapTools {
   boundaryElement = input.required<HTMLElement>();
+  currentMode = input(DrawMode.SINGLE);
   modeChange = output<DrawMode>();
   clear = output<void>();
   close = output<boolean>();
@@ -35,6 +36,7 @@ export class MapTools {
 
   onClear() {
     this.clear.emit();
+    this.onClose();
   }
 
   onClose() {

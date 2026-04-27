@@ -7,7 +7,7 @@
     <i class="material-icons">build</i>
   </button>
   } @else {
-  <app-map-tools [boundaryElement]="mapBoundary" (modeChange)="setMode($event)" (clear)="clearAllLines()"
+  <app-map-tools [boundaryElement]="mapBoundary" [currentMode]="mode" (modeChange)="setMode($event)" (clear)="clearAllLines()"
     (close)="isPanelVisible = false">
   </app-map-tools>
   }
