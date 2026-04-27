@@ -15,6 +15,7 @@ export enum DrawMode {
   imports: [CommonModule, CdkDrag],
   templateUrl: './map-tools.html',
   styleUrl: './map-tools.scss',
+  standalone: true
 })
 export class MapTools {
   boundaryElement = input.required<HTMLElement>();
