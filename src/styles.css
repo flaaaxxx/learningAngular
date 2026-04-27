@@ -13,11 +13,11 @@ body, html {
 
 /* Dostosowanie pozycji kontrolki zoom w Leaflet */
 .leaflet-top {
-  top: 87%;
+  top: 90% !important;
 }
 
 .leaflet-left{
-  left: 96%;
+  left: 96% !important;
 }
 
 /*  */

@@ -1,8 +1,7 @@
-import { Component, AfterViewInit, inject } from '@angular/core';
+import { AfterViewInit, Component, inject } from '@angular/core';
 import * as L from 'leaflet';
-import { LocationService, LocationInfo } from '../location-service/location-service';
-import { CdkDrag } from '@angular/cdk/drag-drop';
-import { DrawMode, MapTools } from "./map-tools/map-tools";
+import { LocationInfo, LocationService } from '../location-service/location-service';
+import { DrawMode, MapTools } from './map-tools/map-tools';
 import { WebcamData, WebcamService } from '../webcam-service/webcam-service';
 import { Observable, of } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
@@ -12,13 +11,13 @@ import { AsyncPipe } from '@angular/common';
   standalone: true,
   templateUrl: './map.html',
   styleUrl: './map.scss',
-  imports: [CdkDrag, MapTools, AsyncPipe],
+  imports: [MapTools, AsyncPipe]
 })
 export default class MapComponent implements AfterViewInit {
 
   private webcamService = inject(WebcamService);
   activeWebcam$: Observable<WebcamData | null> = of(null);
-  
+
   isMapFull = false;
   mode: DrawMode = DrawMode.SINGLE;
   isPanelVisible = false; // Panel domyślnie ukryty
@@ -98,7 +97,6 @@ export default class MapComponent implements AfterViewInit {
     this.activeWebcam$ = this.webcamService.getNearbyWebcam(latlng.lat, latlng.lng);
 
 
-
     this.webcamService.getNearbyWebcam(latlng.lat, latlng.lng).subscribe(cam => {
 
       console.log('Otrzymane dane kamery:', cam);
@@ -106,7 +104,7 @@ export default class MapComponent implements AfterViewInit {
       this.isLoadingCamera = false;
 
       if (!cam) {
-        console.log("Brak kamer w promieniu 15km.");
+        console.log('Brak kamer w promieniu 15km.');
       }
     });
 
@@ -209,7 +207,6 @@ export default class MapComponent implements AfterViewInit {
       this.lines.push(line);
     }
   }
-
 
 
   // private handlePointSelection(latlng: L.LatLng) {
