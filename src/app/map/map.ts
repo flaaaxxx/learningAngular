@@ -26,13 +26,11 @@ export default class MapComponent implements AfterViewInit {
   private homeCooridantes: [number, number] = [52.1606959, 22.2487434];
   private zoomStart = 15;
   private locationService = inject(LocationService);
-  private locationInfo: LocationInfo = { country: '', city: '', address: '', altitude: 0 };
-
   private firstPoint: L.LatLng | null = null;    // Przechowuje pierwszy kliknięty punkt
   private tempMarkers: L.Marker[] = [];          // Lista markerów pomocniczych
   private lines: L.Polyline[] = [];             // Aktualnie narysowana linia
   private markerData = new Map<L.Marker, LocationInfo>();
-
+  private totalDistance = 0;
 
   defaultMarkerIndicatorIcon = L.icon({
     iconUrl: 'map/markerIcon2x.png',
@@ -53,6 +51,7 @@ export default class MapComponent implements AfterViewInit {
 
   setMode(newMode: DrawMode) {
     this.mode = newMode;
+    this.totalDistance = 0;
     this.clearAllLines(); // Resetujemy przy zmianie trybu
   }
 
@@ -101,7 +100,7 @@ export default class MapComponent implements AfterViewInit {
 
   private handleMapClick(latlng: L.LatLng) {
     this.drawLine(latlng);
-
+    this.recalculateTotalDistances();
 
     // 2. Szukanie kamery
     // this.isLoadingCamera = true;
@@ -191,6 +190,17 @@ export default class MapComponent implements AfterViewInit {
           this.firstPoint = latlng;
         }
         break;
+      case DrawMode.MANY_POINTS:
+        this.drawOneLine(latlng);
+        if (this.firstPoint) {
+          // Jeśli właśnie narysowaliśmy linię (mieliśmy firstPoint), 
+          // to go czyścimy, żeby następny klik był "nowym startem"
+          this.firstPoint = null;
+        } else {
+          // Jeśli to był pierwszy klik w parze
+          this.firstPoint = latlng;
+        }
+        break;
       case DrawMode.CONTINUOUS:
         // Każdy nowy punkt staje się punktem startowym dla kolejnego segmentu
         this.drawOneLine(latlng);
@@ -216,8 +226,11 @@ export default class MapComponent implements AfterViewInit {
 
     // 2. Jeśli mamy już punkt odniesienia, rysujemy linię
     if (this.firstPoint) {
+
       // Pobieramy ostatni marker (to jest nasz start dla tej linii)
-      const startMarker = this.tempMarkers[this.tempMarkers.length - 2];
+      // const startMarker = this.tempMarkers[this.tempMarkers.length - 2];
+      const startMarker = this.mode === DrawMode.STAR ? this.tempMarkers[0] : this.tempMarkers[this.tempMarkers.length - 2];
+
       const endMarker = marker;
 
       const line = L.polyline([startMarker.getLatLng(), endMarker.getLatLng()], {
@@ -227,6 +240,26 @@ export default class MapComponent implements AfterViewInit {
         dashArray: this.mode === DrawMode.SINGLE ? '10, 10' : '5, 5'
       }).addTo(this.map);
 
+      const segmentDistance = startMarker.getLatLng().distanceTo(endMarker.getLatLng());
+
+      if (this.mode === DrawMode.CONTINUOUS || this.mode === DrawMode.MANY_POINTS) {
+        // Dodajemy do ogólnej sumy
+        this.totalDistance += segmentDistance;
+
+        // Wyświetlamy sumę skumulowaną na końcu odcinka
+        line.bindTooltip(`Suma: ${this.formatDistance(this.totalDistance)}`, {
+          permanent: true,
+          direction: 'top',
+          className: 'distance-tooltip-total'
+        }).openTooltip();
+      } else {
+        // W trybie SINGLE wyświetlamy po prostu długość odcinka
+        line.bindTooltip(this.formatDistance(segmentDistance), {
+          permanent: true,
+          direction: 'center',
+          className: 'distance-tooltip'
+        }).openTooltip();
+      }
 
       // Funkcja odświeżająca dystans na etykiecie
       const updateDistanceLabel = () => {
@@ -243,17 +276,45 @@ export default class MapComponent implements AfterViewInit {
 
       // Inicjalne obliczenie
       updateDistanceLabel();
+
+      if (this.mode === DrawMode.MANY_POINTS && this.lines.length % 2 === 0) {
+
+      }
       this.lines.push(line);
 
       // KIEDY PRZESUWASZ START:
       startMarker.on('drag', () => {
+        this.recalculateTotalDistances();
         updateDistanceLabel();
       });
 
       // KIEDY PRZESUWASZ KONIEC:
       endMarker.on('drag', () => {
+        this.recalculateTotalDistances();
         updateDistanceLabel();
       });
+    }
+  }
+
+  private recalculateTotalDistances() {
+
+    if (this.mode === DrawMode.CONTINUOUS) {
+
+      let runningTotal = 0;
+
+      this.lines.forEach((line, index) => {
+        const latlngs = line.getLatLngs() as L.LatLng[];
+        const dist = latlngs[0].distanceTo(latlngs[1]);
+        runningTotal += dist;
+
+        if (this.mode === DrawMode.CONTINUOUS || this.mode === DrawMode.MANY_POINTS) {
+          line.setTooltipContent(`Suma: ${this.formatDistance(runningTotal)}`);
+        } else {
+          line.setTooltipContent(this.formatDistance(dist));
+        }
+      });
+
+      this.totalDistance = runningTotal; // Aktualizujemy globalny licznik
     }
   }
 
