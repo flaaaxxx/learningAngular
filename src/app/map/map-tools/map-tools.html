@@ -32,6 +32,10 @@
             <i class="material-icons">hub</i>
             <span>Od punktu startu</span>
         </button>
+        <button [class.active]="isTracking()" (click)="toggleGps()">
+            <i class="material-icons">{{ isTracking() ? 'location_searching' : 'my_location' }}</i>
+            <span>GPS</span>
+        </button>
 
         <hr>
 

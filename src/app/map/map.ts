@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, inject } from '@angular/core';
+import { AfterViewInit, Component, effect, inject } from '@angular/core';
 import * as L from 'leaflet';
 import { LocationInfo, LocationService } from '../location-service/location-service';
 import { DrawMode, MapTools } from './map-tools/map-tools';
 import { WebcamData, WebcamService } from '../webcam-service/webcam-service';
 import { Observable, of } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { GpsService } from './navigate/gps.service';
 
 @Component({
   selector: 'app-map',
@@ -15,7 +16,15 @@ import { AsyncPipe } from '@angular/common';
 })
 export default class MapComponent implements AfterViewInit {
 
+  private userIcon = L.icon({
+    iconUrl: 'map/markerIcon2x.png', // ikona użytkownika
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
+  });
+
   private webcamService = inject(WebcamService);
+  private gpsService = inject(GpsService);
+
   activeWebcam$: Observable<WebcamData | null> = of(null);
 
   isMapFull = false;
@@ -31,6 +40,9 @@ export default class MapComponent implements AfterViewInit {
   private lines: L.Polyline[] = [];             // Aktualnie narysowana linia
   private markerData = new Map<L.Marker, LocationInfo>();
 
+  private userMarker: L.Marker | null = null;
+  private accuracyCircle: L.Circle | null = null;
+
   activeWebcam: WebcamData | null = null;
   isLoadingCamera = false;
 
@@ -43,6 +55,37 @@ export default class MapComponent implements AfterViewInit {
     popupAnchor: [1, -34], // skąd ma wychodzić dymek
     shadowSize: [0, 0],   // rozmiar cienia
   });
+
+  constructor() {
+    effect(() => {
+      const pos = this.gpsService.position();
+      if (pos) {
+        this.updateUserOnMap(pos.latlng, pos.accuracy);
+      } else {
+        this.removeUserFromMap();
+      }
+    });
+  }
+
+  private updateUserOnMap(latlng: L.LatLng, accuracy: number) {
+    if (!this.userMarker) {
+      this.userMarker = L.marker(latlng, { icon: this.userIcon }).addTo(this.map);
+      this.accuracyCircle = L.circle(latlng, { radius: accuracy, weight: 1 }).addTo(this.map);
+      this.map.setView(latlng, 16); // Centruj tylko przy pierwszym złapaniu fixa
+    } else {
+      this.userMarker.setLatLng(latlng);
+      this.accuracyCircle?.setLatLng(latlng).setRadius(accuracy);
+    }
+  }
+
+  private removeUserFromMap() {
+    if (this.userMarker) {
+      this.map.removeLayer(this.userMarker);
+      if (this.accuracyCircle) this.map.removeLayer(this.accuracyCircle);
+      this.userMarker = null;
+      this.accuracyCircle = null;
+    }
+  }
 
   ngAfterViewInit() {
     this.initMap();
