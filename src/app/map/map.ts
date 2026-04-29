@@ -53,7 +53,7 @@ export default class MapComponent implements AfterViewInit {
     iconSize: [25, 41],    // rozmiar z dokumentacji domyślnej ikony
     iconAnchor: [12, 41],  // punkt "szpilki", który dotyka mapy
     popupAnchor: [1, -34], // skąd ma wychodzić dymek
-    shadowSize: [0, 0],   // rozmiar cienia
+    shadowSize: [0, 0]   // rozmiar cienia
   });
 
   constructor() {
@@ -139,7 +139,7 @@ export default class MapComponent implements AfterViewInit {
       keepBuffer: 50,
       // Zapobiega "miganiu" przy zmianie zoomu (trzyma stare kafelki póki nowe się nie załadują)
       updateWhenIdle: false,
-      updateWhenZooming: true,
+      updateWhenZooming: true
     }).addTo(this.map);
   }
 
@@ -151,10 +151,18 @@ export default class MapComponent implements AfterViewInit {
 
   private handleMapClick(latlng: L.LatLng) {
     switch (this.mode) {
-      case DrawMode.SINGLE: this.drawSingleMode(latlng); break;
-      case DrawMode.CONTINUOUS: this.drawContinuousMode(latlng); break;
-      case DrawMode.STAR: this.drawStarMode(latlng); break;
-      case DrawMode.MANY_POINTS: this.drawManyPointsMode(latlng); break;
+      case DrawMode.SINGLE:
+        this.drawSingleMode(latlng);
+        break;
+      case DrawMode.CONTINUOUS:
+        this.drawContinuousMode(latlng);
+        break;
+      case DrawMode.STAR:
+        this.drawStarMode(latlng);
+        break;
+      case DrawMode.MANY_POINTS:
+        this.drawManyPointsMode(latlng);
+        break;
     }
 
 
@@ -303,6 +311,12 @@ export default class MapComponent implements AfterViewInit {
     marker.on('mouseover', () => marker.openPopup());
     marker.on('mouseout', () => marker.closePopup());
 
+    // Obsługa prawego przycisku myszy
+    marker.on('contextmenu', (e) => {
+      this.removeMarkerAndRelatedLines(marker);
+      this.redrawGraph();
+    });
+
     marker.on('dragend', (event) => {
       const newPos = event.target.getLatLng();
       this.loadLocationData(marker, newPos);
@@ -310,6 +324,78 @@ export default class MapComponent implements AfterViewInit {
     });
 
     return marker;
+  }
+
+  private redrawGraph() {
+// 1. Usuń wszystkie istniejące linie z mapy i tablicy
+    this.lines.forEach(line => this.map.removeLayer(line));
+    this.lines = [];
+
+    // 2. Jeśli zostało za mało punktów, by stworzyć linię - przerywamy
+    if (this.tempMarkers.length < 2) {
+      return;
+    }
+
+    // 3. Przerysuj linie zgodnie z aktualnym trybem
+
+    switch (this.mode) {
+      case DrawMode.CONTINUOUS:
+        this.reconstructContinuousPath();
+        break;
+      case DrawMode.STAR:
+        this.reconstructStarPath();
+        break;
+      case DrawMode.MANY_POINTS:
+        this.reconstructManyPointsPath();
+        break;
+    }
+  }
+  private reconstructContinuousPath() {
+    for (let i = 0; i < this.tempMarkers.length - 1; i++) {
+      const start = this.tempMarkers[i];
+      const end = this.tempMarkers[i + 1];
+      this.createConnectedLine(start, end, 'CONTINUOUS');
+      // createConnectedLine automatycznie doda linię do this.lines
+    }
+  }
+
+  private reconstructStarPath() {
+    const center = this.tempMarkers[0];
+    for (let i = 1; i < this.tempMarkers.length; i++) {
+      this.createConnectedLine(center, this.tempMarkers[i], 'STAR');
+    }
+  }
+
+  private reconstructManyPointsPath() {
+    // Łączymy w pary: 0-1, 2-3, 4-5 itd.
+    for (let i = 0; i < this.tempMarkers.length - 1; i += 2) {
+      this.createConnectedLine(this.tempMarkers[i], this.tempMarkers[i + 1], 'MANY_POINTS');
+    }
+  }
+
+  private removeMarkerAndRelatedLines(marker: L.Marker) {
+    // 1. Znajdź indeks markera
+    const index = this.tempMarkers.indexOf(marker);
+    if (index === -1) return;
+
+    // 2. Usuń z mapy i tablicy
+    this.map.removeLayer(marker);
+    this.tempMarkers.splice(index, 1);
+
+    // 3. Usuń powiązane linie
+    // W trybie CONTINUOUS usuwamy wszystkie linie i rysujemy je od nowa,
+    // aby zachować ciągłość trasy bez "dziur"
+    this.refreshPath();
+  }
+
+  private refreshPath() {
+    // Usuń wszystkie linie z mapy
+    this.lines.forEach(l => this.map.removeLayer(l));
+    this.lines = [];
+
+    // Przejdź przez pozostałe markery i połącz je na nowo zgodnie z obecnym trybem
+    // (wykorzystaj logikę z Twoich metod drawSingleMode, drawStarMode itd.)
+    this.recalculateTotalDistances();
   }
 
   private loadLocationData(marker: L.Marker, latlng: L.LatLng) {

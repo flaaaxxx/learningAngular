@@ -12,7 +12,6 @@ $sidebar-width: 250px;
     color: white;
     display: flex;
     flex-direction: column;
-    overflow: visible;
 
     &.collapsed {
         width: 0;
@@ -53,6 +52,10 @@ $sidebar-width: 250px;
 
         cursor: pointer;
         z-index: 1000;
+
+      i {
+        margin-top: 1px;
+      }
     }
 
     .sidebar-header {

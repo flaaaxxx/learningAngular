@@ -8,7 +8,7 @@ export interface WebcamData {
   image: string;
   city?: string;
   url: string;
-  playerUrl: SafeResourceUrl | null; 
+  playerUrl: SafeResourceUrl | null;
 }
 
 @Injectable({ providedIn: 'root' })

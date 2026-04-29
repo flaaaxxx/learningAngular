@@ -1,4 +1,4 @@
-import { CdkDrag } from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 
@@ -13,7 +13,7 @@ export enum DrawMode {
 
 @Component({
   selector: 'app-map-tools',
-  imports: [CommonModule, CdkDrag],
+  imports: [CommonModule, CdkDrag, CdkDragHandle],
   templateUrl: './map-tools.html',
   styleUrl: './map-tools.scss',
   standalone: true

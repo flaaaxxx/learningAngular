@@ -7,13 +7,12 @@ $icon-color: #8b949e;
     z-index: 1000;
     width: 180px;
     background: rgba(13, 17, 23, 0.9); // $dark-bg z lekkim prześwitem
-    border: 1px solid #30363d;
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(8px);
     color: white;
     overflow: hidden;
-    border: 1px solid (var(--primary));
+    border: 1px solid var(--primary);
 
     .panel-header {
         background: #161b22;

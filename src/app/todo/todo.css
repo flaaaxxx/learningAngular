@@ -1,0 +1,21 @@
+h1 {
+  color: #007bff;
+}
+
+ul {
+
+}
+
+li {
+  font-size: 20px;
+  padding: 6px;
+  font-weight: 700;
+}
+
+.todo {
+  color: red;
+}
+
+.done {
+  color: #17e017;
+}

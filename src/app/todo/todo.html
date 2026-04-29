@@ -1,71 +1,74 @@
 Oto plan rozwoju Twojej aplikacji podzielony na funkcjonalności:
 
+<h1>Todo </h1>
 <ul>
-    <li>Ładowarki (Charging Points): Najważniejsza rzecz. Oznaczanie kawiarni, stacji czy parków, gdzie są
-        ogólnodostępne gniazdka.</li>
-    <li>Zasięg (Range Visualizer): Na podstawie Twojej baterii system rysuje okrąg na mapie, pokazujący jak daleko
-        dojedziesz.</li>
-    <li>Rodzaj nawierzchni (Vibration Alert): E-deski na małych kołach nienawidzą kostki brukowej. Oznaczanie
-        "czerwonych stref" z trzęsącym podłożem.</li>
-    <li>Nachylenie terenu (Battery Drain): Wykorzystanie wysokości (altitude), aby ostrzec przed podjazdami, które
-        "zjedzą" baterię.</li>
+    <li class="todo">Usuwanie markerów na mapie
+      <ol>
+        <li class="todo">Prawym przyciskiem</li>
+        <li class="done">Na telefonie pojawia sie X do usunięcia</li>
+      </ol>
+    </li>
 </ul>
 
-<p>----------------------- na przyszłość</p>
 
-<p>
-    1. Katalogowanie Spotów (System Dodawania)
+<h1>Sugestie</h1>
+<ul>
+  <li>Ładowarki (Charging Points): Najważniejsza rzecz. Oznaczanie kawiarni, stacji czy parków, gdzie są
+    ogólnodostępne gniazdka.</li>
+  <li>Zasięg (Range Visualizer): Na podstawie Twojej baterii system rysuje okrąg na mapie, pokazujący jak daleko
+    dojedziesz.</li>
+  <li>Rodzaj nawierzchni (Vibration Alert): E-deski na małych kołach nienawidzą kostki brukowej. Oznaczanie
+    "czerwonych stref" z trzęsącym podłożem.</li>
+  <li>Nachylenie terenu (Battery Drain): Wykorzystanie wysokości (altitude), aby ostrzec przed podjazdami, które
+    "zjedzą" baterię.</li>
+  <li>
+    <strong>1. Katalogowanie Spotów (System Dodawania)</strong>
+    <p>Zamiast zwykłych markerów, wprowadź system oznaczania konkretnych miejsc.</p>
+    <ul>
+      <li><strong>Kategorie miejsc:</strong> Dodaj ikony dla różnych typów spotów: Murek (Ledge), Schody (Stairs), Rurka (Rail), Skatepark, DIY Spot.</li>
+      <li><strong>Ocena nawierzchni:</strong> Skaterzy kochają gładki beton, a nienawidzą kostki brukowej. Dodaj pole "Jakość podłoża" (1-5 gwiazdek).</li>
+      <li><strong>Zdjęcia:</strong> Możliwość wgrania zdjęcia danego murka (przez Firebase lub Cloudinary), aby inni widzieli, czy warto tam jechać.</li>
+    </ul>
+  </li>
 
+  <li>
+    <strong>2. Wykorzystanie danych wysokościowych (Altitude)</strong>
+    <p>Wykorzystaj to, co już masz w kodzie (altitude):</p>
+    <ul>
+      <li><strong>Spoty "Downhill":</strong> System może automatycznie oznaczać miejsca z dużym spadkiem terenu jako idealne do longboardingu lub szybkich zjazdów.</li>
+      <li><strong>Analiza trudności:</strong> Jeśli murek jest na dole stromej góry, dojazd do niego jest trudniejszy – możesz to obliczać na podstawie różnicy wysokości między dwoma punktami.</li>
+    </ul>
+  </li>
 
-    Zamiast zwykłych markerów, wprowadź system oznaczania konkretnych miejsc.
+  <li>
+    <strong>3. "Skate Session" – Tu i Teraz</strong>
+    <p>Funkcjonalność społecznościowa w czasie rzeczywistym:</p>
+    <ul>
+      <li><strong>Kto tam jest?</strong> Możliwość kliknięcia "Check-in". Inni użytkownicy widzą na mapie, że na danym spocie aktualnie jeździ 5 osób.</li>
+      <li><strong>Status oświetlenia:</strong> Dodaj informację, czy spot jest oświetlony w nocy (bardzo ważne jesienią i zimą!).</li>
+      <li><strong>Alert o "Security":</strong> Przycisk szybkiego ostrzegania: "Ochrona przegania" – marker na mapie zmienia kolor na czerwony na 2 godziny.</li>
+    </ul>
+  </li>
 
-    Kategorie miejsc: Dodaj ikony dla różnych typów spotów: Murek (Ledge), Schody (Stairs), Rurka (Rail), Skatepark, DIY
-    Spot.
+  <li>
+    <strong>4. Wykorzystanie Pogody (Open-Meteo)</strong>
+    <p>Skoro masz już w serwisie API Open-Meteo, rozbuduj je o:</p>
+    <ul>
+      <li><strong>Status "Dry/Wet":</strong> Jeśli w ciągu ostatnich 2 godzin padał deszcz, wyświetlaj ostrzeżenie "Spot może być mokry".</li>
+      <li><strong>Wind Check:</strong> Ważne przy skokach nad schodami – silny wiatr może być niebezpieczny.</li>
+    </ul>
+  </li>
 
-    Ocena nawierzchni: Skaterzy kochają gładki beton, a nienawidzą kostki brukowej. Dodaj pole "Jakość podłoża" (1-5
-    gwiazdek).
+  <li>
+    <strong>5. Gamifikacja (Wyzwania)</strong>
+    <ul>
+      <li><strong>Spot of the Week:</strong> Co tydzień jedno miejsce jest oznaczone specjalną ikoną – za zrobienie tam triku i wrzucenie zdjęcia użytkownik dostaje punkty.</li>
+      <li><strong>Linie (Lines):</strong> Możliwość rysowania na mapie całych przejazdów (składających się z kilku spotów po kolei).</li>
+    </ul>
+  </li>
+</ul>
 
-    Zdjęcia: Możliwość wgrania zdjęcia danego murka (przez Firebase lub Cloudinary), aby inni widzieli, czy warto tam
-    jechać.
-</p>
-
-<p>
-    2. Wykorzystanie danych wysokościowych (Altitude)
-    Wykorzystaj to, co już masz w kodzie (altitude):
-
-    Spoty "Downhill": System może automatycznie oznaczać miejsca z dużym spadkiem terenu jako idealne do longboardingu
-    lub szybkich zjazdów.
-
-    Analiza trudności: Jeśli murek jest na dole stromej góry, dojazd do niego jest trudniejszy – możesz to obliczać na
-    podstawie różnicy wysokości między dwoma punktami.
-</p>
-
-<p>
-    3. "Skate Session" – Tu i Teraz
-    Funkcjonalność społecznościowa w czasie rzeczywistym:
-
-    Kto tam jest? Możliwość kliknięcia "Check-in". Inni użytkownicy widzą na mapie, że na danym spocie aktualnie jeździ
-    5 osób.
-
-    Status oświetlenia: Dodaj informację, czy spot jest oświetlony w nocy (bardzo ważne jesienią i zimą!).
-
-    Alert o "Security": Przycisk szybkiego ostrzegania: "Ochrona przegania" – marker na mapie zmienia kolor na czerwony
-    na 2 godziny.
-</p>
-
-<p>
-    4. Wykorzystanie Pogody (Open-Meteo)
-    Skoro masz już w serwisie API Open-Meteo, rozbuduj je o:
-
-    Status "Dry/Wet": Jeśli w ciągu ostatnich 2 godzin padał deszcz, wyświetlaj ostrzeżenie "Spot może być mokry".
-
-    Wind Check: Ważne przy skokach nad schodami – silny wiatr może być niebezpieczny.
-</p>
-
-<p>
-    5. Gamifikacja (Wyzwania)
-    Spot of the Week: Co tydzień jedno miejsce jest oznaczone specjalną ikoną – za zrobienie tam triku i wrzucenie
-    zdjęcia użytkownik dostaje punkty.
-
-    Linie (Lines): Możliwość rysowania na mapie całych przejazdów (składających się z kilku spotów po kolei).
-</p>
+<h1>Zrobione</h1>
+<ul>
+  <li class="done">Na telefonie pojawia sie X do usunięcia</li>
+</ul>
