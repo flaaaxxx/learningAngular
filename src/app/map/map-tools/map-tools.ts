@@ -1,7 +1,6 @@
 import { CdkDrag } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, output } from '@angular/core';
-import { GpsService } from '../navigate/gps.service';
+import { Component, input, output } from '@angular/core';
 
 // export type DrawMode = 'single' | 'continuous' | 'star';
 
@@ -20,10 +19,6 @@ export enum DrawMode {
   standalone: true
 })
 export class MapTools {
-
-  private gpsService = inject(GpsService);
-
-  isTracking = this.gpsService.isTracking;
   boundaryElement = input.required<HTMLElement>();
   currentMode = input(DrawMode.SINGLE);
   modeChange = output<DrawMode>();
@@ -31,7 +26,7 @@ export class MapTools {
   close = output<boolean>();
 
   DRAW_MODE = DrawMode;
-  mode = DrawMode.SINGLE;
+  mode = this.currentMode();
 
   setMode(mode: DrawMode) {
     this.mode = mode;
@@ -46,13 +41,5 @@ export class MapTools {
 
   onClose() {
     this.close.emit(false);
-  }
-
-  toggleGps() {
-    if (this.isTracking()) {
-      this.gpsService.stopTracking();
-    } else {
-      this.gpsService.startTracking();
-    }
   }
 }

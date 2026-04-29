@@ -4,7 +4,6 @@ import { LocationInfo, LocationService } from '../location-service/location-serv
 import { DrawMode, MapTools } from './map-tools/map-tools';
 import { WebcamData, WebcamService } from '../webcam-service/webcam-service';
 import { Observable, of } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
 import { GpsService } from './navigate/gps.service';
 
 @Component({
@@ -12,7 +11,7 @@ import { GpsService } from './navigate/gps.service';
   standalone: true,
   templateUrl: './map.html',
   styleUrl: './map.scss',
-  imports: [MapTools, AsyncPipe]
+  imports: [MapTools]
 })
 export default class MapComponent implements AfterViewInit {
 
@@ -24,11 +23,12 @@ export default class MapComponent implements AfterViewInit {
 
   private webcamService = inject(WebcamService);
   private gpsService = inject(GpsService);
+  isTracking = this.gpsService.isTracking;
 
   activeWebcam$: Observable<WebcamData | null> = of(null);
 
   isMapFull = false;
-  mode: DrawMode = DrawMode.SINGLE;
+  mode: DrawMode = DrawMode.CONTINUOUS;
   isPanelVisible = false; // Panel domyślnie ukryty
 
   private map!: L.Map;
@@ -121,14 +121,25 @@ export default class MapComponent implements AfterViewInit {
     this.isPanelVisible = !this.isPanelVisible;
   }
 
+  toggleGps() {
+    if (this.isTracking()) {
+      this.gpsService.stopTracking();
+    } else {
+      this.gpsService.startTracking();
+    }
+  }
+
   private initMap() {
     this.map = L.map('map').setView(this.homeCooridantes, this.zoomStart);
 
-    // L.Marker.prototype.options.icon = this.defaultMarkerIndicatorIcon;
-
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 20
+      maxZoom: 20,
+      // Zwiększa liczbę kafelków ładowanych "na zapas" poza widocznym obszarem
+      keepBuffer: 50,
+      // Zapobiega "miganiu" przy zmianie zoomu (trzyma stare kafelki póki nowe się nie załadują)
+      updateWhenIdle: false,
+      updateWhenZooming: true,
     }).addTo(this.map);
   }
 

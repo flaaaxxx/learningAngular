@@ -3,7 +3,7 @@ $icon-color: #8b949e;
 .map-controls-panel {
     position: absolute;
     top: 20px; // Poniżej headera
-    right: 20px;
+    right: 80px;
     z-index: 1000;
     width: 180px;
     background: rgba(13, 17, 23, 0.9); // $dark-bg z lekkim prześwitem
@@ -40,7 +40,6 @@ $icon-color: #8b949e;
             cursor: grabbing;
         }
     }
-
 
     .panel-body {
         padding: 10px;
@@ -99,6 +98,7 @@ $icon-color: #8b949e;
         cursor: pointer;
         display: flex;
         padding: 2px;
+        margin-left: 10px;
         border-radius: 4px;
         transition: 0.2s;
 
