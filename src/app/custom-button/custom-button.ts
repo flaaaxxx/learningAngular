@@ -4,7 +4,7 @@ import { Component, input } from '@angular/core';
   selector: 'button[appCustomButton], [appCustomButton], .class-custom-button',
   imports: [],
   templateUrl: './custom-button.html',
-  styleUrl: './custom-button.css',
+  styleUrl: './custom-button.scss',
 })
 export class CustomButton {
     label = input<string>('', { alias: 'appCustomButton' });

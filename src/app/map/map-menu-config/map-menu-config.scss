@@ -1,0 +1,17 @@
+:host {
+  position: absolute;
+  top: 150px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: transparent;
+
+  i {
+    color: white;
+  }
+
+}
+
+

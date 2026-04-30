@@ -1,9 +1,11 @@
+
 <div class="wrapper" #mapBoundary>
 
   <div id="map"></div>
+  <app-map-menu-config></app-map-menu-config>
 
   @if (!isPanelVisible) {
-  <button class="option-trigger" (click)="toggleePanel()" title="Otwórz narzędzia">
+  <button class="option-trigger" (click)="togglePanel()" title="Otwórz narzędzia">
     <i class="material-icons">build</i>
   </button>
   } @else {
@@ -15,30 +17,5 @@
   <button class="option-trigger gps-trigger "  [class.active]="isTracking()" (click)="toggleGps()" title="Włącz GPS">
     <i class="material-icons">{{ isTracking() ? 'location_searching' : 'my_location' }}</i>
   </button>
-
-  <!-- @if (activeWebcam) {
-  <div class="webcam-window">
-    <div class="webcam-header">
-      <span>LIVE: {{ activeWebcam.city }}</span>
-      <button (click)="activeWebcam = null">×</button>
-    </div>
-    
-    <div class="webcam-body">
-      <img [src]="activeWebcam.image" [alt]="activeWebcam.title" class="cam-img">
-      
-      <div class="webcam-footer">
-        <p>{{ activeWebcam.title }}</p>
-        <a [href]="activeWebcam.url" target="_blank">Otwórz źródło</a>
-      </div>
-    </div>
-  </div>
-} -->
-
-  <!-- @if (activeWebcam$ | async; as cam) {
-  <div class="webcam-window">
-    <iframe [src]="cam.playerUrl" width="100%" height="300" frameborder="0" allowfullscreen allow="autoplay">
-    </iframe>
-  </div>
-  } -->
 
 </div>

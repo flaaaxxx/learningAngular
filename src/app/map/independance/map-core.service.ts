@@ -1,0 +1,64 @@
+import {DestroyRef, inject, Injectable} from '@angular/core';
+import {circle, Map as MapLeaf, map} from 'leaflet';
+import {MapLayerService} from './map-layer.service';
+import {CoverageService} from '../coverage-service';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {RouteStorageService} from '../route-storage-service';
+import {forkJoin, take} from 'rxjs';
+import {StreetsService} from '../streets.service';
+import {AreaService} from '../area.service';
+
+@Injectable({providedIn: 'root'})
+export class MapCoreService {
+  private readonly layerService = inject(MapLayerService);
+  private readonly coverageService = inject(CoverageService);
+  private readonly streetsService = inject(StreetsService);
+  private readonly areaService = inject(AreaService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  private map!: MapLeaf;
+
+  initMap(center: [number, number], zoom: number): MapLeaf {
+    this.map = map('map').setView(center, zoom);
+    this.layerService.init(this.map);
+    this.addHomeCircle(center);
+
+    // wczytanie danych na start
+    // forkJoin({
+    //   streets: this.streetsService.loadStreets(),
+    //   coverage: this.coverageService.loadCoverage()
+    // })
+    //   .pipe(takeUntilDestroyed(this.destroyRef))
+    //   .subscribe(({ streets, coverage }) => {
+    //     this.layerService.loadStreetsWithCoverage(streets, coverage);
+    //   });
+
+
+    forkJoin({
+      streets: this.streetsService.loadStreets(),
+      coverage: this.coverageService.loadCoverage()
+    })
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        take(1)
+      )
+      .subscribe(({ streets, coverage }) => {
+
+        this.areaService.generateStreetRegions(streets);
+        this.areaService.regionsList().forEach(r => {
+          console.log(r)
+          r.polygon.addTo(this.map);
+        });
+      });
+    return this.map;
+  }
+
+  private addHomeCircle(center: [number, number]): void {
+    circle(center, {
+      color: '#f03',
+      fillColor: '#f03',
+      fillOpacity: 0.1,
+      radius: 30,
+    }).addTo(this.map);
+  }
+}

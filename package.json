@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port=4444",
+    "start": "ng serve --host=0.0.0.0 --port=4200 --ssl true",
+    "mock-api": "json-server --watch mocks/export5.geojson --port 3000",
+    "dev": "concurrently \"npm run start\" \"npm run mock-api\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -19,6 +21,9 @@
     "@angular/material": "^21.2.8",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "@turf/buffer": "^7.3.5",
+    "@turf/helpers": "^7.3.5",
+    "@turf/turf": "^7.3.5",
     "leaflet": "^1.9.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
@@ -28,6 +33,7 @@
     "@angular/cli": "^21.2.8",
     "@angular/compiler-cli": "^21.2.0",
     "@types/leaflet": "^1.9.21",
+    "concurrently": "^9.2.1",
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2",
