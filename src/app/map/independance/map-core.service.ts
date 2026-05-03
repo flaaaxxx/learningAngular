@@ -33,23 +33,9 @@ export class MapCoreService {
     //     this.layerService.loadStreetsWithCoverage(streets, coverage);
     //   });
 
+    this.areaService.generateStreetRegions();
+    this.areaService.regionsList().forEach(r => r.polygon.addTo(this.map));
 
-    forkJoin({
-      streets: this.streetsService.loadStreets(),
-      coverage: this.coverageService.loadCoverage()
-    })
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        take(1)
-      )
-      .subscribe(({ streets, coverage }) => {
-
-        this.areaService.generateStreetRegions(streets);
-        this.areaService.regionsList().forEach(r => {
-          console.log(r)
-          r.polygon.addTo(this.map);
-        });
-      });
     return this.map;
   }
 
