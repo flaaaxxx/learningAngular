@@ -127,4 +127,28 @@ export class AreaService {
       console.error("Błąd podczas generowania siatki Siedlec:", error);
     }
   }
+
+  checkGpsInRegions(latlng: L.LatLng): void {
+    const point = turf.point([latlng.lng, latlng.lat]);
+
+    this.regions.update(regions =>
+      regions.map(region => {
+        if (
+          !region.isVisited &&
+          turf.booleanPointInPolygon(point, region.feature)
+        ) {
+          region.polygon.setStyle({
+            color: '#2ecc71',
+            fillColor: '#2ecc71',
+            fillOpacity: 0.5,
+            weight: 1
+          });
+
+          return { ...region, isVisited: true };
+        }
+
+        return region;
+      })
+    );
+  }
 }

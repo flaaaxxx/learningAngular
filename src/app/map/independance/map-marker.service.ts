@@ -100,8 +100,6 @@ export class MapMarkerService {
     currentMarker.on('drag', (e: LeafletEvent) => callbacks.onDrag(e));
     currentMarker.on('contextmenu', () => callbacks.onContext(currentMarker));
     currentMarker.on('dragend', () => {
-      // const newPos = currentMarker.getLatLng();  // TODO do usuniecia, jeszcze trzeba przeklikać czy odswieza sie popup
-      // this.loadLocationData(currentMarker, newPos, map.getZoom()); // TODO do usuniecia, jeszcze trzeba przeklikać czy odswieza sie popup
       callbacks.onDragEnd(currentMarker);
       currentMarker.openPopup();
     });

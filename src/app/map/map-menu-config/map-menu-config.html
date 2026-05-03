@@ -1,4 +1,14 @@
-<button menuConfigButton="fiber_manual_record"
-        (click)="loadCoverage()">
+<button
+  menuConfigButton="{{ isTracking() ? 'location_searching' : 'my_location' }}"
+  [class.active]="isTracking()"
+  (click)="toggleGps()"
+  title="Włącz GPS">
 </button>
+
+<button menuConfigButton="build"
+        (click)="togglePanel()"
+        title="Otwórz narzędzia">
+</button>
+
+
 

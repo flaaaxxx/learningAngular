@@ -1,8 +1,6 @@
-import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
-import { CommonModule } from '@angular/common';
-import { Component, input, output } from '@angular/core';
-
-// export type DrawMode = 'single' | 'continuous' | 'star';
+import {CdkDrag, CdkDragHandle} from '@angular/cdk/drag-drop';
+import {CommonModule} from '@angular/common';
+import {Component, input, output} from '@angular/core';
 
 export enum DrawMode {
   SINGLE,

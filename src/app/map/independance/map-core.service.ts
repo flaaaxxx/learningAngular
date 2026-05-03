@@ -1,10 +1,7 @@
 import {DestroyRef, inject, Injectable} from '@angular/core';
-import {circle, Map as MapLeaf, map} from 'leaflet';
+import L, {circle, Map as MapLeaf, map} from 'leaflet';
 import {MapLayerService} from './map-layer.service';
 import {CoverageService} from '../coverage-service';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {RouteStorageService} from '../route-storage-service';
-import {forkJoin, take} from 'rxjs';
 import {StreetsService} from '../streets.service';
 import {AreaService} from '../area.service';
 
@@ -34,8 +31,16 @@ export class MapCoreService {
     //   });
 
     this.areaService.generateStreetRegions();
-    this.areaService.regionsList().forEach(r => r.polygon.addTo(this.map));
+    // this.areaService.regionsList().forEach(r => r.polygon.addTo(this.map));
+    this.areaService.regionsList().forEach(r => {
+      const layer = this.layerService.getLayer('covered');
+      layer.addLayer(r.polygon);
+    });
 
+    return this.map;
+  }
+
+  getMap() {
     return this.map;
   }
 

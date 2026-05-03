@@ -1,21 +1,15 @@
-
-<div class="wrapper" #mapBoundary>
+<div class="map-wrapper" #mapBoundary>
 
   <div id="map"></div>
-  <app-map-menu-config></app-map-menu-config>
 
-  @if (!isPanelVisible) {
-  <button class="option-trigger" (click)="togglePanel()" title="Otwórz narzędzia">
-    <i class="material-icons">build</i>
-  </button>
-  } @else {
-  <app-map-tools [boundaryElement]="mapBoundary" [currentMode]="mode" (modeChange)="setMode($event)"
-    (clear)="clearAllLines()" (close)="isPanelVisible = false">
-  </app-map-tools>
+  <app-map-menu-config
+    (_isPanelVisible)="togglePanel($event)"
+  ></app-map-menu-config>
+
+  @if (isPanelVisible) {
+    <app-map-tools [boundaryElement]="mapBoundary" [currentMode]="mode" (modeChange)="setMode($event)"
+                   (clear)="clearAllLines()" (close)="isPanelVisible = false">
+    </app-map-tools>
   }
-
-  <button class="option-trigger gps-trigger "  [class.active]="isTracking()" (click)="toggleGps()" title="Włącz GPS">
-    <i class="material-icons">{{ isTracking() ? 'location_searching' : 'my_location' }}</i>
-  </button>
 
 </div>
