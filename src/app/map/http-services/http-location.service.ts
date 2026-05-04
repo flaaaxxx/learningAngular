@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { Observable, map, catchError, of, forkJoin } from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {inject, Injectable} from '@angular/core';
+import {catchError, forkJoin, map, Observable, of} from 'rxjs';
 
 export interface LocationInfo {
   country: string;
@@ -12,21 +12,22 @@ export interface LocationInfo {
 @Injectable({
   providedIn: 'root'
 })
-export class LocationService {
+export class HttpLocationService {
   private http = inject(HttpClient);
-  private readonly API_URL = 'https://nominatim.openstreetmap.org/reverse';
+  private readonly PLACE_INFO_URL = 'https://nominatim.openstreetmap.org/reverse';
+  private readonly ELEVATION_INFO_URL = 'https://api.open-meteo.com/v1/elevation';
 
   getLocationData(lat: number, lng: number): Observable<LocationInfo> {
-    const address$ = this.http.get<any>(this.API_URL, {
+    const address$ = this.http.get<any>(this.PLACE_INFO_URL, {
       params: {
           format: 'jsonv2',
-          lat: lat.toString(), 
+          lat: lat.toString(),
           lon: lng.toString()
       },
       headers: { 'Accept-Language': 'pl' }
     });
 
-    const elevation$ = this.http.get<any>('https://api.open-meteo.com/v1/elevation', {
+    const elevation$ = this.http.get<any>(this.ELEVATION_INFO_URL, {
       params: { latitude: lat.toString(), longitude: lng.toString() }
     });
 

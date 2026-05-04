@@ -1,5 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import L from 'leaflet';
+import * as turf from '@turf/turf';
 import {DrawMode} from './map-tools/map-tools';
 import {MapMarkerService} from './independance/map-marker.service';
 import {MapLineService} from './independance/map-line.service';
@@ -175,5 +176,44 @@ export class MapDrawService {
         }
         break;
     }
+  }
+
+  /**
+   * Wywoływana przy kliknięciu w mapę, dodaje marker i zapisuje współrzędną do tymczasowej tablicy.
+   */
+  addPointToDraft(latlng: L.LatLng, map: L.Map) {
+    this.handleContinuousMode(latlng, map);
+  }
+
+  /**
+   *  Dynamicznie rysuje/aktualizuje tymczasowy poligon na mapie w miarę dodawania punktów.
+   */
+  previewDraftPolygon() {
+  }
+
+  /**
+   * Czyści markery i tymczasowy poligon (np. po anulowaniu).
+   */
+  clearDraft(map: L.Map): void {
+    this.clearAll(map);
+  }
+
+  /**
+   * Pobiera punkty, domyka poligon (pierwszy punkt = ostatni) i zwraca obiekt GeoJSON (używając turf.polygon).
+   */
+  finalizePolygon() {
+    if (this.markers.length < 3) {
+      console.error('Potrzeba minimum 3 punktów, aby stworzyć obszar!');
+      return null;
+    }
+
+    // Pobieramy współrzędne ze wszystkich markerów w kolejności dodania[cite: 3]
+    const coords = this.markers.map(m => [m.getLatLng().lng, m.getLatLng().lat]);
+
+    // Domykamy poligon (pierwszy punkt musi być taki sam jak ostatni)
+    coords.push(coords[0]);
+
+    // Tworzymy GeoJSON przy użyciu turf (pamiętaj o imporcie turf)
+    return turf.polygon([coords]);
   }
 }

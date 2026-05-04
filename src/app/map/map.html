@@ -3,7 +3,8 @@
   <div id="map"></div>
 
   <app-map-menu-config
-    (_isPanelVisible)="togglePanel($event)"
+    (isPanelVisibleToggle)="togglePanel($event)"
+    (isDrawingModeToggle)="toggleDrawingMode($event)"
   ></app-map-menu-config>
 
   @if (isPanelVisible) {
@@ -11,5 +12,10 @@
                    (clear)="clearAllLines()" (close)="isPanelVisible = false">
     </app-map-tools>
   }
+
+  <button
+    class="confirm-button"
+    (click)="onConfirmArea()"
+  >Zatwierdź obszar</button>
 
 </div>

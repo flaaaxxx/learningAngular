@@ -70,8 +70,8 @@ export class MapLayerService {
   private addLayersControl(map: L.Map): void {
     // Warstwy nakładkowe pobrane z LayerService
     const overlays: Record<string, L.LayerGroup> = {
-      'Pokrycie': this.getLayer('streets'),
-      'Trasy': this.getLayer('covered'),
+      'Pokrycie miasta': this.getLayer('covered'),
+      'Placeholder': this.getLayer('streets'),
     };
 
     L.control.layers(this.baseLayers, overlays, {

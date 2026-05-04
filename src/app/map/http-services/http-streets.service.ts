@@ -1,19 +1,16 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {map, Observable} from 'rxjs';
-import {GeoJSON} from 'leaflet';
+import {Observable} from 'rxjs';
 import {FeatureCollection, LineString} from 'geojson';
 
 @Injectable({
   providedIn: 'root'
 })
-export class StreetsService {
+export class HttpStreetsService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:3000/streets';
+  private readonly ALL_STREETS_GEO_URL = 'http://localhost:3000/streets';
 
-  // ----- Odczyt -----
   loadStreets(): Observable<FeatureCollection<LineString>> {
-    return this.http.get<FeatureCollection<LineString>>(this.apiUrl);
+    return this.http.get<FeatureCollection<LineString>>(this.ALL_STREETS_GEO_URL);
   }
-
 }

@@ -67,7 +67,6 @@ export class GpsService {
   }
 
   startSimulationSouth() {
-    if (this.isSimulating) return;
 
     this.stopTracking(); // wyłącz prawdziwy GPS
 

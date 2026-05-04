@@ -20,6 +20,7 @@ export default class MapComponent implements AfterViewInit {
   private readonly drawService = inject(MapDrawService);
 
   isPanelVisible = false;
+  isDrawingMode = false;
   mode: DrawMode = DrawMode.CONTINUOUS;
 
   private map!: L.Map;
@@ -29,9 +30,16 @@ export default class MapComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.map = this.coreService.initMap(this.homeCoordinates, this.zoomStart);
 
-    this.map.on('click', (e: L.LeafletMouseEvent) =>
-      this.drawService.switchModeLine(e.latlng, this.mode, this.map)
+    this.map.on('click', (e: L.LeafletMouseEvent) => {
+        if (this.isDrawingMode) {
+          this.drawService.addPointToDraft(e.latlng, this.map);
+        }
+      }
     );
+
+    // this.map.on('click', (e: L.LeafletMouseEvent) =>
+    //     this.drawService.switchModeLine(e.latlng, this.mode, this.map)
+    // );
 
     this.zoomService.setupZoom(this.map, (zoom) =>
       this.drawService.updatePopupsOnZoom(zoom)
@@ -51,4 +59,28 @@ export default class MapComponent implements AfterViewInit {
     this.isPanelVisible = event
   }
 
+  toggleDrawingMode(event: boolean): void {
+    this.isDrawingMode = event;
+
+    if (this.isDrawingMode) {
+      this.drawService.clearDraft(this.map);
+    } else {
+      this.drawService.clearDraft(this.map);
+    }
+  }
+
+  onConfirmArea() {
+    const polygonGeoJson = this.drawService.finalizePolygon();
+    if (polygonGeoJson) {
+      console.log('Gotowy obszar do zapisu:', polygonGeoJson);
+      // Tutaj wywołasz usługę API do zapisu
+
+      // Po zapisie wyjdź z trybu rysowania
+      this.toggleDrawingMode(false);
+    }
+  }
+
+  // useArea(area: Area) {}
+
+  protected readonly console = console;
 }

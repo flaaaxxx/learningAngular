@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import {Marker, Circle, icon, LeafletEvent, Map as MapLeaf, LatLng, circle, marker, point} from 'leaflet';
-import { LocationInfo, LocationService } from './location.service';
+import { LocationInfo, HttpLocationService } from '../http-services/http-location.service';
 import {MapLayerService} from './map-layer.service';
 
 // MapMarkerService jest właścicielem wszystkiego co dotyczy markerów na mapie. Ma dwie odrębne odpowiedzialności:
@@ -29,7 +29,7 @@ export interface MarkerCallbacks {
 
 @Injectable({ providedIn: 'root' })
 export class MapMarkerService {
-  private locationService = inject(LocationService);
+  private locationService = inject(HttpLocationService);
   private layerService = inject(MapLayerService);
 
   /** Wewnętrzny rejestr danych lokalizacji per marker */

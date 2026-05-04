@@ -1,7 +1,8 @@
-import { Injectable, signal } from '@angular/core';
+import {inject, Injectable, signal} from '@angular/core';
 import * as L from 'leaflet';
 import * as turf from '@turf/turf';
 import { FeatureCollection, LineString, Polygon, Feature } from 'geojson';
+import {HttpCoverageService} from './http-services/http-coverage.service';
 
 export interface Region {
   id: string;
@@ -12,6 +13,8 @@ export interface Region {
 
 @Injectable({ providedIn: 'root' })
 export class AreaService {
+  private readonly coverageApiService = inject(HttpCoverageService);
+
   private regions = signal<Region[]>([]);
   public readonly regionsList = this.regions.asReadonly();
 
@@ -110,8 +113,9 @@ export class AreaService {
             interactive: false
           });
 
+          const bbox = turf.bbox(cell);
           newRegions.push({
-            id: `hex-grid-${index}`,
+            id: `hex-${bbox.map(v => v.toFixed(5)).join('-')}`,
             polygon: poly,
             isVisited: false,
             feature: cell as any
@@ -131,12 +135,11 @@ export class AreaService {
   checkGpsInRegions(latlng: L.LatLng): void {
     const point = turf.point([latlng.lng, latlng.lat]);
 
+    let visitedRegionId: string | null = null;
+
     this.regions.update(regions =>
       regions.map(region => {
-        if (
-          !region.isVisited &&
-          turf.booleanPointInPolygon(point, region.feature)
-        ) {
+        if (!region.isVisited && turf.booleanPointInPolygon(point, region.feature)) {
           region.polygon.setStyle({
             color: '#2ecc71',
             fillColor: '#2ecc71',
@@ -144,11 +147,19 @@ export class AreaService {
             weight: 1
           });
 
+          visitedRegionId = region.id;
           return { ...region, isVisited: true };
         }
-
         return region;
       })
     );
+
+    if (visitedRegionId !== null) {
+      this.saveCoverage(visitedRegionId);
+    }
+  }
+
+  private saveCoverage(visitedRegionId: string): void {
+    this.coverageApiService.saveCoverage({visitedRegionId: visitedRegionId}).subscribe();
   }
 }

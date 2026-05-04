@@ -24,8 +24,10 @@ export class MapMenuConfig {
   private readonly destroyRef = inject(DestroyRef);
 
   isPanelVisible = false;
-  _isPanelVisible = output<boolean>();
+  isPanelVisibleToggle = output<boolean>();
   isTracking = this.gpsService.isTracking;
+  isDrawingMode = false;
+  isDrawingModeToggle = output<boolean>();
 
   constructor() {
     toObservable(this.isTracking).pipe(
@@ -41,15 +43,20 @@ export class MapMenuConfig {
 
   togglePanel(): void {
     this.isPanelVisible = !this.isPanelVisible;
-    this._isPanelVisible.emit(this.isPanelVisible)
+    this.isPanelVisibleToggle.emit(this.isPanelVisible)
+  }
+
+  toggleDrawingMode(): void {
+    this.isDrawingMode = !this.isDrawingMode;
+    this.isDrawingModeToggle.emit(this.isDrawingMode)
   }
 
   private handleGpsUpdate = (pos: GpsPosition | null): void => {
     const map = this.coreService.getMap();
-    if(pos) {
-        this.markerService.updateUserMarker(map, pos.latlng, pos.accuracy);
-        this.areaService.checkGpsInRegions(pos.latlng);
-      } else {
+    if (pos) {
+      this.markerService.updateUserMarker(map, pos.latlng, pos.accuracy);
+      this.areaService.checkGpsInRegions(pos.latlng);
+    } else {
       this.markerService.removeUserFromMap(map);
     }
   };

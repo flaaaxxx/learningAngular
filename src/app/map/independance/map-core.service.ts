@@ -2,14 +2,14 @@ import {DestroyRef, inject, Injectable} from '@angular/core';
 import L, {circle, Map as MapLeaf, map} from 'leaflet';
 import {MapLayerService} from './map-layer.service';
 import {CoverageService} from '../coverage-service';
-import {StreetsService} from '../streets.service';
+import {HttpStreetsService} from '../http-services/http-streets.service';
 import {AreaService} from '../area.service';
 
 @Injectable({providedIn: 'root'})
 export class MapCoreService {
   private readonly layerService = inject(MapLayerService);
   private readonly coverageService = inject(CoverageService);
-  private readonly streetsService = inject(StreetsService);
+  private readonly streetsService = inject(HttpStreetsService);
   private readonly areaService = inject(AreaService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -30,8 +30,7 @@ export class MapCoreService {
     //     this.layerService.loadStreetsWithCoverage(streets, coverage);
     //   });
 
-    this.areaService.generateStreetRegions();
-    // this.areaService.regionsList().forEach(r => r.polygon.addTo(this.map));
+    this.areaService.generateStreetRegions(); // generowanie siatki do pokrycia
     this.areaService.regionsList().forEach(r => {
       const layer = this.layerService.getLayer('covered');
       layer.addLayer(r.polygon);
