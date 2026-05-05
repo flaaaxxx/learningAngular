@@ -1,0 +1,35 @@
+:host {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 20px;
+  padding: 40px;
+  border: 2px solid red;
+}
+
+.route-card {
+  border-radius: 12px;
+  //overflow: hidden;
+  font-size: 12px;
+
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25),
+  0 8px 20px rgba(0, 0, 0, 0.35);
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px); /* 🔥 uniesienie */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3),
+    0 16px 30px rgba(0, 0, 0, 0.45);
+  }
+
+  .route-content {
+    width: 300px;
+  }
+}
+
+.mini-map {
+  height: 90px; /* 🔥 mniejsza mapka */
+  width: 100%;
+}
+

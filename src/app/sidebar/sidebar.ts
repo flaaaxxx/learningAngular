@@ -8,5 +8,5 @@ import { RouterLink } from '@angular/router';
   styleUrl: './sidebar.scss',
 })
 export class Sidebar {
-  isCollapsed = true;
+  isCollapsed = false;
 }

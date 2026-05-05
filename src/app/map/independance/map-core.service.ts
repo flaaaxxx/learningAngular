@@ -30,11 +30,12 @@ export class MapCoreService {
     //     this.layerService.loadStreetsWithCoverage(streets, coverage);
     //   });
 
-    this.areaService.generateStreetRegions(); // generowanie siatki do pokrycia
-    this.areaService.regionsList().forEach(r => {
-      const layer = this.layerService.getLayer('covered');
-      layer.addLayer(r.polygon);
-    });
+    // to rysuje od razu siatke poki co wykomentowane zyby testowac co innego
+    // this.areaService.generateStreetRegions(); // generowanie siatki do pokrycia
+    // this.areaService.regionsList().forEach(r => {
+    //   const layer = this.layerService.getLayer('covered');
+    //   layer.addLayer(r.polygon);
+    // });
 
     return this.map;
   }

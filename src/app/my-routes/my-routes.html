@@ -1,0 +1,28 @@
+@for (route of routes; track route.id) {
+  <div class="route-card">
+
+    <div class="mini-map" [id]="'map-' + route.id"></div>
+
+    <div class="route-content">
+      <div class="route-header">
+        <div>
+          <h3>#{{route.id}}</h3>
+          <p>{{route.date | date:'shortDate'}}</p>
+        </div>
+        <div class="distance">
+          {{route.distance}} km
+        </div>
+      </div>
+
+      <div class="route-info">
+        {{route.duration}} • {{route.points}}
+      </div>
+
+      <div class="actions">
+        <button>▶</button>
+        <button class="delete">✕</button>
+      </div>
+    </div>
+
+  </div>
+}

@@ -5,6 +5,7 @@ import {DrawMode} from './map-tools/map-tools';
 import {MapMarkerService} from './independance/map-marker.service';
 import {MapLineService} from './independance/map-line.service';
 import {MapLayerService} from './independance/map-layer.service';
+import { AreaService } from "./area.service";
 
 /**
  * MapDrawService — jedyna odpowiedzialność: orkiestracja trybów rysowania.
@@ -17,6 +18,7 @@ export class MapDrawService {
   private markerService = inject(MapMarkerService);
   private lineService = inject(MapLineService);
   private layerService = inject(MapLayerService);
+  private areaService = inject(AreaService);
 
   private markers: L.Marker[] = [];
   private firstPoint: L.LatLng | null = null;
@@ -120,6 +122,22 @@ export class MapDrawService {
 
   // ----- Prywatne -----
 
+  refreshLiveGrid() {
+    if (this.markers.length < 3) return;
+
+    const coords = this.markers.map(m => [m.getLatLng().lng, m.getLatLng().lat]);
+    coords.push([this.markers[0].getLatLng().lng, this.markers[0].getLatLng().lat]); // domknięcie
+
+    const currentPolygon = turf.polygon([coords]);
+    this.areaService.generateAreaGrid(currentPolygon);
+
+    // 2. Pobieramy warstwę, na której wyświetlamy kafelki[cite: 6]
+    const layer = this.layerService.getLayer('covered');
+    this.areaService.regionsList().forEach(r => {
+      layer.addLayer(r.polygon);
+    });
+  }
+
   /**
    * Tworzy marker przez MarkerService, rejestruje eventy (usuwanie, drag),
    * dodaje do wewnętrznej listy i zwraca.
@@ -129,6 +147,7 @@ export class MapDrawService {
       onDrag: () => {
         // Linie reagują same przez eventy zarejestrowane w LineService.
         // Tu możemy np. aktualizować stan UI jeśli potrzeba.
+        this.refreshLiveGrid();
       },
       onDragEnd: (m) => {
         this.markerService.loadLocationData(m, m.getLatLng(), map.getZoom());
@@ -201,19 +220,23 @@ export class MapDrawService {
   /**
    * Pobiera punkty, domyka poligon (pierwszy punkt = ostatni) i zwraca obiekt GeoJSON (używając turf.polygon).
    */
-  finalizePolygon() {
+  finalizePolygon(map: L.Map) {
     if (this.markers.length < 3) {
       console.error('Potrzeba minimum 3 punktów, aby stworzyć obszar!');
       return null;
     }
+// 1. Wizualne domknięcie: Rysujemy linię od ostatniego do pierwszego markera[cite: 3, 7]
+    const firstMarker = this.markers[0];
+    const lastMarker = this.markers[this.markers.length - 1];
 
-    // Pobieramy współrzędne ze wszystkich markerów w kolejności dodania[cite: 3]
+    this.lineService.createConnectedLine(map, lastMarker, firstMarker, DrawMode.CONTINUOUS);
+
+    // 2. Przygotowanie danych GeoJSON dla Turf
     const coords = this.markers.map(m => [m.getLatLng().lng, m.getLatLng().lat]);
 
-    // Domykamy poligon (pierwszy punkt musi być taki sam jak ostatni)
-    coords.push(coords[0]);
+    // Domykamy tablicę współrzędnych dla formatu Polygon (pierwszy == ostatni)
+    coords.push([firstMarker.getLatLng().lng, firstMarker.getLatLng().lat]);
 
-    // Tworzymy GeoJSON przy użyciu turf (pamiętaj o imporcie turf)
     return turf.polygon([coords]);
   }
 }

@@ -477,6 +477,58 @@
     {
       "visitedRegionId": "hex-22.24720-52.14818-22.24955-52.14942",
       "id": "HNo4N73gmdo"
+    },
+    {
+      "visitedRegionId": "hex-22.24833-52.15994-22.25068-52.16119",
+      "id": "_JNKf-3t5hE"
+    },
+    {
+      "visitedRegionId": "hex-22.24657-52.15932-22.24892-52.16057",
+      "id": "ZLM_hIaMqzo"
+    },
+    {
+      "visitedRegionId": "hex-22.24833-52.15870-22.25068-52.15994",
+      "id": "Ao_oQ4cwAJ0"
+    },
+    {
+      "visitedRegionId": "hex-22.24657-52.15807-22.24892-52.15932",
+      "id": "LlXL4qFQbLc"
+    },
+    {
+      "visitedRegionId": "hex-22.24833-52.15745-22.25068-52.15870",
+      "id": "AEpvQw1UvPg"
+    },
+    {
+      "visitedRegionId": "hex-22.24657-52.15683-22.24892-52.15807",
+      "id": "lol6lMQXfUI"
+    },
+    {
+      "visitedRegionId": "hex-22.24833-52.15620-22.25068-52.15745",
+      "id": "oa3H63wzJLc"
+    },
+    {
+      "visitedRegionId": "hex-22.24657-52.15558-22.24892-52.15683",
+      "id": "q6_9xQYQVkc"
+    },
+    {
+      "visitedRegionId": "hex-22.24833-52.15496-22.25068-52.15620",
+      "id": "U6vTkLCzcfs"
+    },
+    {
+      "visitedRegionId": "hex-22.24657-52.15434-22.24892-52.15558",
+      "id": "Ub2YeBBJw6w"
+    },
+    {
+      "visitedRegionId": "cell-12-1777904596120",
+      "id": "o1kiate0iEw"
+    },
+    {
+      "visitedRegionId": "cell-11-1777904596120",
+      "id": "q6IosArCM2k"
+    },
+    {
+      "visitedRegionId": "cell-10-1777904596120",
+      "id": "Ej3KI-_tzP0"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
